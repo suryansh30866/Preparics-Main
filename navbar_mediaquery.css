@@ -1,0 +1,487 @@
+/* ============================================================
+   NAVBAR RESPONSIVE MEDIA QUERIES
+   Mobile-First Responsive Navigation for Preparics
+============================================================ */
+
+/* Base container protection */
+.nav-sub {
+  box-sizing: border-box !important;
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+.nav-right-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+/* ============================================================
+   DESKTOP & LARGE SCREENS (min-width: 1025px)
+============================================================ */
+@media (min-width: 1025px) {
+  .nav-sub {
+    height: 64px !important;
+    padding: 0 40px !important;
+    gap: 40px !important;
+  }
+  
+  .nav-brand {
+    font-size: 17px !important;
+    gap: 10px !important;
+  }
+  
+  .nav-logo-fallback {
+    width: 34px !important;
+    height: 34px !important;
+    font-size: 16px !important;
+  }
+  
+  .nav-tabs {
+    display: flex !important;
+    gap: 8px !important;
+    flex: 1 !important;
+    justify-content: center !important;
+    overflow: visible !important;
+    position: static !important;
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+    height: auto !important;
+    box-shadow: none !important;
+  }
+  
+  .sub-tab {
+    padding: 9px 18px !important;
+    font-size: 14px !important;
+    width: auto !important;
+    margin: 0 !important;
+  }
+  
+  .nav-right-actions {
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+    flex-shrink: 0 !important;
+  }
+  
+  .nav-actions {
+    display: flex !important;
+    gap: 10px !important;
+  }
+  
+  .nav-actions .btn-ghost {
+    display: inline-flex !important;
+    padding: 8px 18px !important;
+    font-size: 14px !important;
+  }
+  
+  .nav-actions .btn-fill {
+    display: inline-flex !important;
+    padding: 8px 20px !important;
+    font-size: 14px !important;
+    height: auto !important;
+    min-height: auto !important;
+  }
+  
+  /* Hide menu toggle on desktop */
+  .nav-menu-toggle {
+    display: none !important;
+  }
+}
+
+/* ============================================================
+   TABLET & SMALL SCREENS (max-width: 1024px)
+============================================================ */
+@media (max-width: 1024px) {
+  .nav-sub {
+    height: 60px !important;
+    padding: 0 32px !important;
+    gap: 16px !important;
+    justify-content: space-between !important;
+  }
+  
+  .nav-brand {
+    font-size: 16px !important;
+    gap: 8px !important;
+    flex-shrink: 0 !important;
+  }
+  
+  .nav-brand img {
+    width: 32px !important;
+    height: 32px !important;
+  }
+  
+  /* Navigation Tabs - Hidden by default, dropdown when open */
+  .nav-tabs {
+    display: none !important;
+    position: fixed !important;
+    top: 60px !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    height: auto !important;
+    max-height: calc(100vh - 60px) !important;
+    background: rgba(255, 255, 255, 0.98) !important;
+    backdrop-filter: blur(14px) !important;
+    -webkit-backdrop-filter: blur(14px) !important;
+    border-bottom: 1px solid var(--line) !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 2px !important;
+    padding: 12px 32px !important;
+    margin: 0 !important;
+    z-index: 9998 !important;
+    overflow-y: auto !important;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08) !important;
+  }
+  
+  .nav-tabs.mobile-visible {
+    display: flex !important;
+  }
+  
+  .sub-tab {
+    width: 100% !important;
+    padding: 11px 14px !important;
+    font-size: 14px !important;
+    border-radius: 8px !important;
+    text-align: left !important;
+    margin: 2px 0 !important;
+    display: block !important;
+  }
+  
+  .sub-tab:hover {
+    background: rgba(0, 0, 0, 0.05) !important;
+  }
+  
+  /* Right Actions Group: [Enter Portal] [☰] */
+  .nav-right-actions {
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+    flex-shrink: 0 !important;
+    margin-left: auto !important;
+  }
+  
+  .nav-actions {
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    flex-shrink: 0 !important;
+  }
+  
+  .nav-actions .btn-ghost {
+    display: none !important;
+  }
+  
+  .nav-actions .btn-fill {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    padding: 7px 14px !important;
+    font-size: 13px !important;
+    height: 36px !important;
+    min-height: 36px !important;
+    max-height: 36px !important;
+    border-radius: 999px !important;
+    white-space: nowrap !important;
+    flex-shrink: 0 !important;
+    box-sizing: border-box !important;
+  }
+  
+  .nav-actions .btn-fill svg {
+    width: 11px !important;
+    height: 11px !important;
+    flex-shrink: 0 !important;
+  }
+  
+  /* Menu Toggle Button */
+  .nav-menu-toggle {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 38px !important;
+    height: 38px !important;
+    min-width: 38px !important;
+    min-height: 38px !important;
+    max-width: 38px !important;
+    max-height: 38px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    background: #ffffff !important;
+    border: 1.5px solid var(--line) !important;
+    border-radius: 8px !important;
+    color: var(--ink) !important;
+    font-size: 18px !important;
+    line-height: 1 !important;
+    cursor: pointer !important;
+    flex-shrink: 0 !important;
+    box-sizing: border-box !important;
+    transition: background 0.15s, border-color 0.15s !important;
+  }
+  
+  .nav-menu-toggle:active {
+    background: var(--bg) !important;
+  }
+  
+  .nav-menu-toggle.active {
+    background: var(--ink) !important;
+    color: white !important;
+    border-color: var(--ink) !important;
+  }
+  
+  /* Page layout at tablet */
+  .hero, .sec, #programmes { padding-left: 32px; padding-right: 32px; }
+  .sec-full { padding-left: 32px; padding-right: 32px; }
+  .map-header { padding-left: 32px; padding-right: 32px; }
+  .prog-card { padding: 28px; }
+  .portal-cta { padding: 80px 32px; }
+  .about-img { height: 380px; }
+  #contact .about-split > img { height: 380px !important; }
+}
+
+/* ============================================================
+   MOBILE (max-width: 768px)
+============================================================ */
+@media (max-width: 768px) {
+  .nav-sub {
+    height: 56px !important;
+    padding: 0 20px !important;
+    gap: 8px !important;
+  }
+  
+  .nav-brand {
+    font-size: 15px !important;
+    gap: 7px !important;
+  }
+  
+  .nav-brand img {
+    width: 30px !important;
+    height: 30px !important;
+  }
+  
+  .nav-tabs {
+    top: 56px !important;
+    max-height: calc(100vh - 56px) !important;
+    padding: 10px 20px !important;
+  }
+  
+  .sub-tab {
+    padding: 10px 12px !important;
+    font-size: 13.5px !important;
+  }
+  
+  .nav-right-actions {
+    gap: 8px !important;
+  }
+  
+  .nav-actions .btn-fill {
+    padding: 6px 12px !important;
+    font-size: 12px !important;
+    height: 34px !important;
+    min-height: 34px !important;
+    max-height: 34px !important;
+    gap: 5px !important;
+  }
+  
+  .nav-menu-toggle {
+    width: 36px !important;
+    height: 36px !important;
+    min-width: 36px !important;
+    min-height: 36px !important;
+    max-width: 36px !important;
+    max-height: 36px !important;
+    font-size: 16px !important;
+    border-radius: 7px !important;
+  }
+  
+  /* Page layout at mobile */
+  .hero { padding-top: 56px; padding-bottom: 56px; }
+  .hero h1 { font-size: clamp(38px, 10vw, 54px); }
+  .hero-body { font-size: 16px; margin-bottom: 28px; }
+  .hero-img { margin-top: 36px; }
+  .hero-stats { margin-top: 44px; }
+  .hero-stat { padding: 22px 16px; }
+  .prog-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .prog-card { padding: 24px; }
+  .prog-img { height: 180px !important; margin-bottom: 22px !important; }
+  .portal-cta { padding-top: 64px; padding-bottom: 64px; }
+  .map-container { height: 420px; }
+  .footer-bottom { gap: 12px; flex-wrap: wrap; }
+}
+
+/* ============================================================
+   SMALL PHONES (max-width: 480px)
+============================================================ */
+@media (max-width: 480px) {
+  .nav-sub {
+    padding: 0 16px !important;
+    gap: 8px !important;
+  }
+  
+  .nav-brand {
+    font-size: 14px !important;
+    gap: 6px !important;
+  }
+  
+  .nav-brand img {
+    width: 28px !important;
+    height: 28px !important;
+  }
+  
+  .nav-tabs {
+    padding: 8px 16px !important;
+  }
+  
+  .sub-tab {
+    padding: 9px 12px !important;
+    font-size: 13px !important;
+  }
+  
+  .nav-right-actions {
+    gap: 6px !important;
+  }
+  
+  .nav-actions .btn-fill {
+    padding: 6px 10px !important;
+    font-size: 11px !important;
+    height: 32px !important;
+    min-height: 32px !important;
+    max-height: 32px !important;
+    gap: 4px !important;
+  }
+  
+  .nav-menu-toggle {
+    width: 34px !important;
+    height: 34px !important;
+    min-width: 34px !important;
+    min-height: 34px !important;
+    max-width: 34px !important;
+    max-height: 34px !important;
+    font-size: 15px !important;
+    border-radius: 6px !important;
+  }
+  
+  /* Page layout at small mobile */
+  .hero, .sec, #programmes { padding-left: 16px; padding-right: 16px; }
+  .sec-full, .portal-cta { padding-left: 16px; padding-right: 16px; }
+  .map-header { padding: 48px 16px 32px; }
+  .hero h1 { font-size: clamp(34px, 10vw, 44px); }
+  .hero-body { font-size: 15px; line-height: 1.65; }
+  .hero-btns { display: grid; grid-template-columns: 1fr; }
+  .hero-btns a { justify-content: center; width: 100%; }
+  .hero-img { margin-top: 32px; border-radius: 3px; }
+  .hero-stats { margin-top: 36px; }
+  .hero-stat-n { font-size: 36px; }
+  .prog-grid, .results-bar { grid-template-columns: 1fr; }
+  .prog-card { padding: 22px 20px; }
+  .prog-img { height: 190px !important; }
+  .about-split, .portal-cta { gap: 32px; }
+  .about-img, #contact .about-split > img { height: 300px !important; }
+  .res-cell { padding: 26px 22px; }
+  .res-n { font-size: 42px; }
+  .portal-img { height: 280px; }
+  #results > .sec > img { height: 220px !important; margin-top: 32px !important; }
+  .map-container { height: 360px; }
+  .map-info-card { max-width: 205px; }
+  footer { padding: 48px 16px 28px; }
+  .footer-top { gap: 28px; padding-bottom: 36px; }
+  .footer-bottom { padding-top: 24px; }
+}
+
+/* ============================================================
+   EXTRA NARROW PHONES (max-width: 360px)
+============================================================ */
+@media (max-width: 360px) {
+  .nav-sub {
+    padding: 0 12px !important;
+    gap: 6px !important;
+  }
+  
+  .nav-brand {
+    font-size: 13px !important;
+    gap: 5px !important;
+  }
+  
+  .nav-brand img {
+    width: 24px !important;
+    height: 24px !important;
+  }
+  
+  .nav-right-actions {
+    gap: 4px !important;
+  }
+  
+  .nav-actions .btn-fill {
+    padding: 5px 8px !important;
+    font-size: 10.5px !important;
+    height: 30px !important;
+    min-height: 30px !important;
+    max-height: 30px !important;
+  }
+  
+  .nav-actions .btn-fill svg {
+    width: 9px !important;
+    height: 9px !important;
+  }
+  
+  .nav-menu-toggle {
+    width: 32px !important;
+    height: 32px !important;
+    min-width: 32px !important;
+    min-height: 32px !important;
+    max-width: 32px !important;
+    max-height: 32px !important;
+    font-size: 14px !important;
+  }
+}
+
+/* ============================================================
+   TOUCH DEVICES (Avoid unwanted padding ballooning on navbar)
+============================================================ */
+@media (hover: none) and (pointer: coarse) {
+  .sub-tab {
+    min-height: 44px !important;
+    display: flex !important;
+    align-items: center !important;
+  }
+  
+  .nav-menu-toggle {
+    padding: 0 !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
+  }
+  
+  .nav-actions .btn-fill {
+    box-sizing: border-box !important;
+  }
+}
+
+/* ============================================================
+   LANDSCAPE MOBILE
+============================================================ */
+@media (max-width: 768px) and (max-height: 500px) {
+  .nav-sub {
+    height: 48px !important;
+  }
+  
+  .nav-tabs {
+    top: 48px !important;
+    max-height: calc(100vh - 48px) !important;
+  }
+}
+
+/* ============================================================
+   REDUCED MOTION
+============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  .nav-sub,
+  .nav-tabs,
+  .sub-tab,
+  .nav-menu-toggle {
+    transition: none !important;
+  }
+}

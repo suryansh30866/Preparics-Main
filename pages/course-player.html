@@ -1,0 +1,610 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101010">
+  <title>Course Player | Preparics</title>
+  <link rel="icon" type="image/png" href="../logo.png">
+  <link rel="shortcut icon" href="../favicon.ico">
+  <link rel="apple-touch-icon" href="../logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink: #101010;
+      --muted: #737373;
+      --line: #e6e6e6;
+      --soft: #f7f7f7;
+      --max: 1320px;
+      --green: #1a9e4a;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: #fafafa;
+      color: var(--ink);
+      font-family: 'DM Sans', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    button, a { font: inherit; }
+
+    /* Nav */
+    .nav {
+      height: 64px;
+      background: #fff;
+      border-bottom: 1px solid var(--line);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .nav-inner {
+      max-width: var(--max);
+      height: 100%;
+      margin: auto;
+      padding: 0 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .nav-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      color: var(--ink);
+      font-weight: 600;
+    }
+    .brand img {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+    }
+    .nav-divider {
+      width: 1px;
+      height: 20px;
+      background: var(--line);
+    }
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--ink);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 500;
+      transition: background .15s;
+    }
+    .back-link:hover {
+      background: var(--soft);
+    }
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .timer-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 7px 15px;
+      background: var(--ink);
+      color: #fff;
+      text-decoration: none;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 500;
+      transition: opacity .15s;
+    }
+    .timer-cta:hover { opacity: .88; }
+
+    /* Player Layout */
+    .player-layout {
+      max-width: var(--max);
+      width: 100%;
+      margin: 0 auto;
+      padding: 28px;
+      display: grid;
+      grid-template-columns: minmax(0, 1.85fr) minmax(320px, 1fr);
+      gap: 28px;
+      align-items: start;
+      flex: 1;
+    }
+
+    /* Main Video Theater */
+    .theater {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+    .video-frame-wrap {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      background: #000;
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 12px 36px rgba(0,0,0,.12);
+    }
+    .video-frame-wrap iframe {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+
+    /* Video Metadata */
+    .video-meta {
+      background: #fff;
+      padding: 22px 24px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+    }
+    .meta-top {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+      flex-wrap: wrap;
+    }
+    .course-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 9px;
+      background: var(--soft);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--ink);
+      letter-spacing: .02em;
+    }
+    .instructor-tag {
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 500;
+    }
+    .video-title {
+      margin: 0 0 10px;
+      font-size: 22px;
+      font-weight: 500;
+      letter-spacing: -.03em;
+      line-height: 1.3;
+    }
+    .video-desc {
+      margin: 0;
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    /* Sidebar Playlist Switcher */
+    .sidebar {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      max-height: calc(100vh - 120px);
+      position: sticky;
+      top: 92px;
+    }
+    .sidebar-head {
+      padding: 18px 20px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .sidebar-head h2 {
+      margin: 0;
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: -.01em;
+    }
+    .sidebar-head span {
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .playlist-list {
+      list-style: none;
+      margin: 0;
+      padding: 8px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .playlist-list::-webkit-scrollbar { width: 4px; }
+    .playlist-list::-webkit-scrollbar-thumb { background: #ddd; border-radius: 2px; }
+
+    .playlist-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px;
+      border-radius: 8px;
+      text-decoration: none;
+      color: var(--ink);
+      cursor: pointer;
+      transition: background .12s;
+    }
+    .playlist-item:hover {
+      background: var(--soft);
+    }
+    .playlist-item.active {
+      background: #f0faf4;
+      border: 1px solid rgba(26, 158, 74, .25);
+    }
+
+    .item-thumb-wrap {
+      position: relative;
+      width: 76px;
+      aspect-ratio: 16 / 9;
+      border-radius: 5px;
+      overflow: hidden;
+      flex-shrink: 0;
+      background: #202020;
+    }
+    .item-thumb-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .item-now-playing {
+      position: absolute;
+      inset: 0;
+      background: rgba(26, 158, 74, .8);
+      color: #fff;
+      display: grid;
+      place-items: center;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+      opacity: 0;
+    }
+    .playlist-item.active .item-now-playing {
+      opacity: 1;
+    }
+
+    .item-info {
+      flex: 1;
+      overflow: hidden;
+    }
+    .item-title {
+      font-size: 13px;
+      font-weight: 500;
+      line-height: 1.35;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      margin-bottom: 3px;
+    }
+    .playlist-item.active .item-title {
+      font-weight: 600;
+      color: var(--green);
+    }
+    .item-sub {
+      font-size: 11px;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Auth loading */
+    #loading {
+      position: fixed;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      background: #fff;
+      z-index: 20;
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    @media (max-width: 900px) {
+      .player-layout {
+        grid-template-columns: 1fr;
+        padding: 16px;
+        gap: 20px;
+      }
+      .sidebar {
+        position: static;
+        max-height: 480px;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .nav {
+        height: 58px;
+      }
+      .nav-inner {
+        padding: 0 14px;
+        gap: 8px;
+      }
+      .nav-left {
+        gap: 8px;
+      }
+      .nav-divider {
+        display: none;
+      }
+      .brand {
+        font-size: 15px;
+        gap: 8px;
+      }
+      .brand img {
+        width: 28px;
+        height: 28px;
+      }
+      .back-link {
+        font-size: 12px;
+        padding: 5px 11px;
+      }
+      .timer-cta {
+        font-size: 12px;
+        padding: 6px 12px;
+      }
+      .player-layout {
+        padding: 14px;
+        gap: 16px;
+      }
+      .video-meta {
+        padding: 18px 16px;
+      }
+      .video-title {
+        font-size: 19px;
+      }
+    }
+
+    @media (max-width: 420px) {
+      .nav-inner {
+        padding: 0 10px;
+        gap: 6px;
+      }
+      .back-link {
+        font-size: 11px;
+        padding: 4px 8px;
+      }
+      .timer-cta {
+        padding: 6px 8px;
+      }
+      .timer-cta span {
+        display: none;
+      }
+      .player-layout {
+        padding: 10px;
+        gap: 14px;
+      }
+      .video-meta {
+        padding: 14px 12px;
+      }
+      .video-title {
+        font-size: 17px;
+      }
+      .sidebar-head {
+        padding: 12px 14px;
+      }
+      .playlist-item {
+        padding: 10px 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="loading">Loading course player…</div>
+
+  <nav class="nav">
+    <div class="nav-inner">
+      <div class="nav-left">
+        <a class="brand" href="exam-portal.html">
+          <img src="../logo.png" alt="Preparics logo">
+          <span>Preparics</span>
+        </a>
+        <div class="nav-divider"></div>
+        <a class="back-link" href="exam-portal.html">← Portal</a>
+      </div>
+      <div class="nav-actions">
+        <a class="timer-cta" href="study-timer.html">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2" fill="none"/><path d="M12 7v5l3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          <span>Focus timer</span>
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="player-layout">
+    <!-- Main Video Section -->
+    <div class="theater">
+      <div class="video-frame-wrap">
+        <iframe
+          id="mainPlayer"
+          src=""
+          title="Preparics Course Player"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen>
+        </iframe>
+      </div>
+
+      <div class="video-meta">
+        <div class="meta-top">
+          <span class="course-badge" id="courseBadge">Course</span>
+          <span class="instructor-tag">Taught by Nilanshu Sir • Preparics</span>
+        </div>
+        <h1 class="video-title" id="courseTitle">Loading course…</h1>
+        <p class="video-desc" id="courseDesc">Please wait while the lecture playlist loads.</p>
+      </div>
+    </div>
+
+    <!-- Sidebar Playlist Queue -->
+    <aside class="sidebar">
+      <div class="sidebar-head">
+        <h2>Course Library</h2>
+        <span id="playlistCount">7 courses</span>
+      </div>
+      <ul class="playlist-list" id="playlistList"></ul>
+    </aside>
+  </main>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
+
+    const firebaseConfig = { apiKey:"AIzaSyBL--yNzohCUW5Vg3Yll36ut0r53rFDHyU", authDomain:"preparics-8bbcc.firebaseapp.com", databaseURL:"https://preparics-8bbcc-default-rtdb.firebaseio.com", projectId:"preparics-8bbcc", storageBucket:"preparics-8bbcc.firebasestorage.app", messagingSenderId:"707427796857", appId:"1:707427796857:web:130e73c8867fe5ec8691a8", measurementId:"G-SL3D0G49S3" };
+    onAuthStateChanged(getAuth(initializeApp(firebaseConfig)), user => {
+      if (!user) window.location.replace('../index.html');
+      else document.getElementById('loading').remove();
+    });
+  </script>
+
+  <script>
+    const COURSES = [
+      {
+        id: "PLKImUZc_svGQ",
+        videoId: "0_SDDtXOBr4",
+        title: "Principle of inheritance",
+        type: "Course",
+        badge: "5 lessons",
+        thumbnail: "https://i.ytimg.com/vi/0_SDDtXOBr4/hqdefault.jpg",
+        description: "In-depth video lectures covering Mendelian genetics, pleiotropy, polygenic inheritance, and chromosomal theory by Nilanshu Sir."
+      },
+      {
+        id: "PLVmM-TYuAoJ8",
+        videoId: "0_SDDtXOBr4",
+        title: "Principle of Inheritance (Series)",
+        type: "Playlist",
+        badge: "5 videos",
+        thumbnail: "https://i.ytimg.com/vi/0_SDDtXOBr4/hqdefault.jpg",
+        description: "Complete chapter playlist covering genetics exposed and core problem solving."
+      },
+      {
+        id: "PLeX823ZN94pEZ0C5V0sKix89J9KL4BrJM",
+        videoId: "zvYEWBlB3Hc",
+        title: "Class 11 Botany",
+        type: "Course",
+        badge: "1 lesson",
+        thumbnail: "https://i.ytimg.com/vi/zvYEWBlB3Hc/hqdefault.jpg",
+        description: "Foundational Class 11 Botany lecture focusing on Ribosomes, protein synthesis, and cellular mechanisms."
+      },
+      {
+        id: "PLeX823ZN94pHJt4FGpm6r1UJQd6PqMuP-",
+        videoId: "ycq1Zo_yGc4",
+        title: "Plantation crop Tea",
+        type: "Playlist",
+        badge: "3 videos",
+        thumbnail: "https://i.ytimg.com/vi/ycq1Zo_yGc4/hqdefault.jpg",
+        description: "Detailed walkthrough of tea cultivation, processing methods (CTC & Orthodox), and crop management."
+      },
+      {
+        id: "PLG0_Iemy2ofc",
+        videoId: "76hjoGbt-xU",
+        title: "Cell Biology",
+        type: "Course",
+        badge: "4 lessons",
+        thumbnail: "https://i.ytimg.com/vi/76hjoGbt-xU/hqdefault.jpg",
+        description: "Comprehensive lessons on cell structure, cellular respiration, and organelle functions."
+      },
+      {
+        id: "PLeX823ZN94pGsc2env3Mble5sMmjF-fih",
+        videoId: "6t9VWn-DeMQ",
+        title: "Dairy technology from basics",
+        type: "Playlist",
+        badge: "11 videos",
+        thumbnail: "https://i.ytimg.com/vi/6t9VWn-DeMQ/hqdefault.jpg",
+        description: "Complete 11-lecture series exploring dairy science, milk processing, and technology fundamentals."
+      },
+      {
+        id: "PLeX823ZN94pEZDHfy4fxbzc4MfDUgwt-K",
+        videoId: "z5JS6yLoKcE",
+        title: "Body fluids and circulation",
+        type: "Playlist",
+        badge: "6 videos",
+        thumbnail: "https://i.ytimg.com/vi/z5JS6yLoKcE/hqdefault.jpg",
+        description: "High-yield revision series covering blood composition, plasma, and cardiac cycle."
+      }
+    ];
+
+    let currentCourseIndex = 0;
+
+    function getParam(name) {
+      return new URLSearchParams(window.location.search).get(name);
+    }
+
+    function loadCourse(index) {
+      if (index < 0 || index >= COURSES.length) index = 0;
+      currentCourseIndex = index;
+      const c = COURSES[index];
+
+      const iframe = document.getElementById('mainPlayer');
+      iframe.src = `https://www.youtube-nocookie.com/embed/${c.videoId}?list=${c.id}&autoplay=1&rel=0&modestbranding=1`;
+
+      document.getElementById('courseBadge').textContent = c.type;
+      document.getElementById('courseTitle').textContent = c.title;
+      document.getElementById('courseDesc').textContent = c.description;
+      document.title = `${c.title} | Preparics`;
+
+      document.querySelectorAll('.playlist-item').forEach((el, i) => {
+        el.classList.toggle('active', i === index);
+      });
+
+      const newUrl = `${window.location.pathname}?list=${c.id}`;
+      window.history.replaceState({ index }, document.title, newUrl);
+    }
+
+    function renderSidebar() {
+      const listEl = document.getElementById('playlistList');
+      listEl.innerHTML = COURSES.map((c, i) => `
+        <li class="playlist-item ${i === currentCourseIndex ? 'active' : ''}" data-index="${i}">
+          <div class="item-thumb-wrap">
+            <img src="${c.thumbnail}" alt="${c.title}" loading="lazy">
+            <div class="item-now-playing">Playing</div>
+          </div>
+          <div class="item-info">
+            <div class="item-title">${c.title}</div>
+            <div class="item-sub">
+              <span>${c.badge}</span>
+              <span>•</span>
+              <span>${c.type}</span>
+            </div>
+          </div>
+        </li>
+      `).join('');
+
+      listEl.querySelectorAll('.playlist-item').forEach(item => {
+        item.addEventListener('click', () => {
+          const idx = Number(item.dataset.index);
+          loadCourse(idx);
+        });
+      });
+    }
+
+    const paramList = getParam('list');
+    let initIdx = 0;
+    if (paramList) {
+      const found = COURSES.findIndex(c => c.id === paramList);
+      if (found !== -1) initIdx = found;
+    }
+
+    renderSidebar();
+    loadCourse(initIdx);
+  </script>
+</body>
+</html>

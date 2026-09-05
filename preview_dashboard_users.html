@@ -1,0 +1,1591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Preparics — Admin Console</title>
+  <meta name="robots" content="noindex, nofollow, noarchive">
+  <link rel="icon" type="image/png" href="/logo.png">
+  <link rel="shortcut icon" href="/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=Google+Sans:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    :root {
+      --white: #ffffff;
+      --ink: #0d0d0d;
+      --ink2: #444444;
+      --ink3: #777777;
+      --ink4: #bbbbbb;
+      --line: #e4e4e4;
+      --line-subtle: #f0f0f0;
+      --bg: #f8f9fa;
+      --card-bg: #ffffff;
+      --font: 'DM Sans', 'Google Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      --ease: cubic-bezier(0.4, 0, 0.2, 1);
+      --max: 1140px;
+      --success: #10b981;
+      --success-bg: #ecfdf5;
+      --success-border: #a7f3d0;
+      --accent: #2563eb;
+      --accent-bg: #eff6ff;
+      --accent-border: #bfdbfe;
+    }
+    html, body {
+      min-height: 100%;
+      font-family: var(--font);
+      background-color: var(--white);
+      color: var(--ink);
+      -webkit-font-smoothing: antialiased;
+      line-height: 1.5;
+    }
+
+    /* Navbar matching index.html */
+    .admin-navbar {
+      position: sticky;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 64px;
+      z-index: 1000;
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--line);
+      padding: 0 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: var(--ink);
+      font-size: 17px;
+      font-weight: 500;
+      letter-spacing: -0.01em;
+    }
+
+    .nav-logo-box {
+      width: 34px;
+      height: 34px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      background: var(--white);
+    }
+
+    .nav-logo-box img {
+      width: 22px;
+      height: 22px;
+      object-fit: contain;
+    }
+
+    .badge-admin {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: #f1f3f5;
+      color: var(--ink2);
+      border: 1px solid #e2e5e9;
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .user-pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: var(--ink2);
+      padding: 6px 14px;
+      border-radius: 999px;
+      background: var(--bg);
+      border: 1px solid var(--line);
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      background: var(--success);
+      border-radius: 50%;
+      box-shadow: 0 0 6px var(--success);
+    }
+
+    .btn-ghost {
+      padding: 8px 18px;
+      border-radius: 999px;
+      border: 1.5px solid var(--line);
+      background: transparent;
+      color: var(--ink);
+      font-family: var(--font);
+      font-size: 13.5px;
+      font-weight: 400;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s var(--ease);
+    }
+
+    .btn-ghost:hover {
+      background: var(--bg);
+      border-color: #ccc;
+    }
+
+    .btn-fill {
+      padding: 9px 22px;
+      border-radius: 999px;
+      border: none;
+      background: var(--ink);
+      color: white;
+      font-family: var(--font);
+      font-size: 13.5px;
+      font-weight: 500;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      transition: opacity 0.15s, transform 0.15s var(--ease);
+    }
+
+    .btn-fill:hover {
+      opacity: 0.85;
+      transform: translateY(-1px);
+    }
+
+    /* Page Container */
+    .dashboard-container {
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 48px 40px 80px;
+    }
+
+    .hero-header {
+      margin-bottom: 36px;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 28px;
+    }
+
+    .page-title {
+      font-size: clamp(32px, 4vw, 44px);
+      font-weight: 400;
+      letter-spacing: -0.03em;
+      color: var(--ink);
+      line-height: 1.1;
+      margin-bottom: 10px;
+    }
+
+    .page-desc {
+      font-size: 16px;
+      color: var(--ink2);
+      font-weight: 300;
+      max-width: 660px;
+      line-height: 1.6;
+    }
+
+    /* Stats Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 20px;
+      margin-bottom: 40px;
+    }
+
+    .stat-card {
+      background: var(--white);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 24px;
+      transition: all 0.2s var(--ease);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+    }
+
+    .stat-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.05);
+      border-color: #d1d5db;
+    }
+
+    .stat-label {
+      font-size: 12px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--ink3);
+      margin-bottom: 10px;
+    }
+
+    .stat-value {
+      font-size: 26px;
+      font-weight: 500;
+      color: var(--ink);
+      letter-spacing: -0.02em;
+      margin-bottom: 4px;
+    }
+
+    .stat-meta {
+      font-size: 12.5px;
+      color: var(--success);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-weight: 400;
+    }
+
+    /* Panels */
+    .panel-card {
+      background: var(--white);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 32px;
+      margin-bottom: 32px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+    }
+
+    .panel-header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 6px;
+      flex-wrap: wrap;
+    }
+
+    .panel-title-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .panel-title {
+      font-size: 20px;
+      font-weight: 500;
+      color: var(--ink);
+      letter-spacing: -0.015em;
+    }
+
+    .badge-count {
+      font-size: 12px;
+      font-weight: 500;
+      background: var(--bg);
+      border: 1px solid var(--line);
+      color: var(--ink2);
+      padding: 3px 10px;
+      border-radius: 999px;
+    }
+
+    .panel-subtext {
+      font-size: 14px;
+      color: var(--ink3);
+      font-weight: 400;
+      margin-bottom: 22px;
+      line-height: 1.5;
+    }
+
+    /* Directory Controls (Search + Sync) */
+    .dir-controls {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 22px;
+      flex-wrap: wrap;
+    }
+
+    .search-box {
+      position: relative;
+      flex: 1;
+      max-width: 440px;
+      min-width: 260px;
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--ink3);
+      pointer-events: none;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 10px 16px 10px 40px;
+      border-radius: 999px;
+      border: 1.5px solid var(--line);
+      background: #fafafa;
+      font-family: var(--font);
+      font-size: 13.5px;
+      color: var(--ink);
+      outline: none;
+      transition: all 0.18s var(--ease);
+    }
+
+    .search-input:focus {
+      background: var(--white);
+      border-color: var(--ink);
+      box-shadow: 0 0 0 3px rgba(13, 13, 13, 0.06);
+    }
+
+    .dir-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-sync {
+      padding: 8px 16px;
+      border-radius: 999px;
+      border: 1.5px solid var(--line);
+      background: var(--white);
+      color: var(--ink);
+      font-family: var(--font);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s var(--ease);
+    }
+
+    .btn-sync:hover:not(:disabled) {
+      background: var(--bg);
+      border-color: #ccc;
+    }
+
+    .btn-sync:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .sync-icon {
+      transition: transform 0.6s linear;
+    }
+
+    .syncing .sync-icon {
+      animation: spin 0.8s linear infinite;
+    }
+
+    /* Minimalist Table */
+    .table-container {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      overflow: hidden;
+      background: var(--white);
+    }
+
+    .users-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 13.5px;
+    }
+
+    .users-table th {
+      background: #fafafa;
+      color: var(--ink3);
+      font-size: 11.5px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--line);
+      white-space: nowrap;
+    }
+
+    .users-table td {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--line-subtle);
+      vertical-align: middle;
+      color: var(--ink2);
+    }
+
+    .users-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .users-table tr:hover td {
+      background: rgba(248, 249, 250, 0.7);
+    }
+
+    /* User Profile Info Cell */
+    .user-cell {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .user-avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      border: 1px solid var(--line);
+      object-fit: cover;
+      background: var(--bg);
+      flex-shrink: 0;
+    }
+
+    .avatar-initials {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: #0d0d0d;
+      color: #ffffff;
+      font-weight: 600;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .user-name-title {
+      font-weight: 500;
+      color: var(--ink);
+      font-size: 14px;
+      letter-spacing: -0.01em;
+      text-transform: capitalize;
+    }
+
+    .uid-tag {
+      font-size: 11px;
+      color: var(--ink3);
+      font-family: ui-monospace, SFMono-Regular, monospace;
+      background: #f1f3f5;
+      padding: 1px 6px;
+      border-radius: 4px;
+      display: inline-block;
+      margin-top: 2px;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .uid-tag:hover {
+      background: #e2e5e9;
+      color: var(--ink);
+    }
+
+    /* Contact Links */
+    .contact-link {
+      color: var(--ink);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      transition: color 0.15s;
+    }
+
+    .contact-link:hover {
+      color: var(--accent);
+      text-decoration: underline;
+    }
+
+    .phone-text {
+      font-size: 12.5px;
+      color: var(--ink2);
+      display: block;
+      margin-top: 2px;
+      font-feature-settings: "tnum";
+    }
+
+    /* City & Status Badges */
+    .city-pill {
+      font-size: 12px;
+      font-weight: 500;
+      padding: 3px 10px;
+      border-radius: 999px;
+      background: #f1f3f5;
+      color: var(--ink);
+      border: 1px solid #e5e7eb;
+      display: inline-block;
+      white-space: nowrap;
+    }
+
+    .badge-status {
+      font-size: 11px;
+      font-weight: 500;
+      padding: 3px 9px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      white-space: nowrap;
+    }
+
+    .badge-completed {
+      background: var(--success-bg);
+      color: #065f46;
+      border: 1px solid var(--success-border);
+    }
+
+    .badge-enrolled {
+      background: var(--accent-bg);
+      color: #1e40af;
+      border: 1px solid var(--accent-border);
+      margin-top: 4px;
+    }
+
+    .location-sub {
+      font-size: 11.5px;
+      color: var(--ink3);
+      max-width: 220px;
+      line-height: 1.35;
+      margin-top: 3px;
+    }
+
+    .device-text {
+      font-size: 11.5px;
+      color: var(--ink3);
+      margin-top: 2px;
+    }
+
+    /* Empty Table State */
+    .empty-state {
+      text-align: center;
+      padding: 48px 24px;
+      color: var(--ink3);
+    }
+
+    .empty-icon {
+      width: 36px;
+      height: 36px;
+      color: var(--ink4);
+      margin-bottom: 10px;
+    }
+
+    /* Output console */
+    .output-console {
+      background: #0d0d0d;
+      border-radius: 14px;
+      padding: 20px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 13px;
+      color: #38bdf8;
+      overflow-x: auto;
+      max-height: 250px;
+      white-space: pre-wrap;
+      box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Security list */
+    .security-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .security-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      font-size: 14px;
+      color: var(--ink2);
+      line-height: 1.5;
+    }
+
+    .check-badge {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #ecfdf5;
+      border: 1px solid #a7f3d0;
+      color: var(--success);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .check-badge svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    .security-item strong {
+      color: var(--ink);
+      font-weight: 500;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    @media (max-width: 860px) {
+      .admin-navbar { padding: 0 20px; }
+      .dashboard-container { padding: 32px 20px 60px; }
+      .table-container { overflow-x: auto; }
+      .users-table { min-width: 700px; }
+    }
+  
+    /* Blog Studio Styles */
+    .blog-editor-card {
+      background: #fafafa;
+      border: 1.5px dashed var(--line);
+      border-radius: 16px;
+      padding: 26px;
+      margin-bottom: 24px;
+      display: none;
+      animation: fadeIn .25s var(--ease);
+    }
+    .blog-editor-card.open {
+      display: block;
+    }
+    .form-row-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+    .form-group-dash {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .form-group-dash label {
+      font-size: 12.5px;
+      font-weight: 500;
+      color: var(--ink);
+    }
+    .input-dash {
+      padding: 10px 14px;
+      border-radius: 10px;
+      border: 1.5px solid var(--line);
+      background: var(--white);
+      font-family: var(--font);
+      font-size: 13.5px;
+      color: var(--ink);
+      outline: none;
+      transition: border-color .18s, box-shadow .18s;
+    }
+    .input-dash:focus {
+      border-color: var(--ink);
+      box-shadow: 0 0 0 3px rgba(13,13,13,.06);
+    }
+    .textarea-dash {
+      width: 100%;
+      min-height: 140px;
+      padding: 12px 14px;
+      border-radius: 10px;
+      border: 1.5px solid var(--line);
+      background: var(--white);
+      font-family: var(--font);
+      font-size: 13.5px;
+      line-height: 1.6;
+      color: var(--ink);
+      outline: none;
+      resize: vertical;
+      transition: border-color .18s;
+    }
+    .textarea-dash:focus {
+      border-color: var(--ink);
+      box-shadow: 0 0 0 3px rgba(13,13,13,.06);
+    }
+    .preset-chips {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 4px;
+    }
+    .preset-chip {
+      font-size: 11px;
+      font-weight: 500;
+      padding: 3px 8px;
+      border-radius: 6px;
+      background: #e9ecef;
+      border: 1px solid #ced4da;
+      cursor: pointer;
+      color: var(--ink2);
+      transition: background .12s;
+    }
+    .preset-chip:hover {
+      background: #dee2e6;
+      color: var(--ink);
+    }
+    .editor-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 18px;
+      flex-wrap: wrap;
+    }
+    .btn-delete-blog {
+      padding: 5px 12px;
+      border-radius: 8px;
+      border: 1px solid #fecaca;
+      background: #fef2f2;
+      color: #b91c1c;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: all .15s;
+    }
+    .btn-delete-blog:hover {
+      background: #fee2e2;
+      border-color: #fca5a5;
+    }
+    .btn-view-blog {
+      padding: 5px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      background: var(--white);
+      color: var(--ink);
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: background .15s;
+    }
+    .btn-view-blog:hover {
+      background: var(--bg);
+    }
+
+  </style>
+</head>
+<body>
+
+  <header class="admin-navbar">
+    <div class="nav-brand">
+      <div class="nav-logo-box">
+        <img src="/logo.png" alt="Preparics Logo" onerror="this.onerror=null; this.src='/favicon.ico';">
+      </div>
+      <span>Preparics</span>
+      <span class="badge-admin">Admin</span>
+    </div>
+
+    <div class="nav-actions">
+      <div class="user-pill">
+        <span class="status-dot"></span>
+        <span>Admin: <strong>Batman</strong></span>
+      </div>
+
+      <form method="POST" action="/admin91939/logout" style="display: inline;">
+        <button type="submit" class="btn-ghost">
+          <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+          </svg>
+          Logout
+        </button>
+      </form>
+    </div>
+  </header>
+
+  <main class="dashboard-container">
+    <div class="hero-header">
+      <h1 class="page-title">Platform Overview</h1>
+      <p class="page-desc">Internal administrative management environment for Preparics learning systems, curriculum resources, and access security.</p>
+    </div>
+
+    <!-- 4 Stats Cards -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label">Registered Students</div>
+        <div class="stat-value" id="statUserCount">1 Students</div>
+        <div class="stat-meta">
+          <span>&#x25CF;</span> Firebase RTDB Synced
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-label">Admin Session</div>
+        <div class="stat-value">Active</div>
+        <div class="stat-meta">
+          <span>&#x25CF;</span> Server-Side Verified
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-label">Study Materials</div>
+        <div class="stat-value">13 Books</div>
+        <div class="stat-meta">
+          <span>&#x25CF;</span> Class 11 &amp; 12 NCERT PDF Reader
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-label">Security Profile</div>
+        <div class="stat-value">Scrypt + HttpOnly</div>
+        <div class="stat-meta">
+          <span>&#x25CF;</span> Zero Plaintext Credentials
+        </div>
+      </div>
+    </div>
+
+    <!-- Firebase Users Directory Section (Placed directly below Platform Overview stats) -->
+    <div class="panel-card" id="usersDirectoryPanel">
+      <div class="panel-header-row">
+        <div class="panel-title-group">
+          <h2 class="panel-title">Registered Students Directory</h2>
+          <span class="badge-count" id="tableCountBadge">1 Total</span>
+        </div>
+      </div>
+      <p class="panel-subtext">
+        Live student onboarding records, contact information, and device details synchronized from Firebase Realtime Database.
+      </p>
+
+      <div class="dir-controls">
+        <div class="search-box">
+          <svg class="search-icon" width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <circle cx="11" cy="11" r="8" stroke-width="2"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65" stroke-width="2"></line>
+          </svg>
+          <input
+            type="text"
+            id="userSearchInput"
+            class="search-input"
+            placeholder="Search by name, email, phone, city..."
+            autocomplete="off"
+          >
+        </div>
+
+        <div class="dir-actions">
+          <button id="refreshUsersBtn" class="btn-sync" title="Sync live records from Firebase">
+            <svg class="sync-icon" width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+            </svg>
+            <span id="syncBtnText">Sync Firebase</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="table-container">
+        <table class="users-table">
+          <thead>
+            <tr>
+              <th>Student</th>
+              <th>Contact Details</th>
+              <th>City &amp; Location</th>
+              <th>Last Active / Device</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="usersTableBody">
+            
+              
+              <tr class="user-row" data-search="suryansh yadav suryansh30866@gmail.com +919235925051 varanasi en48qehnywnqns0ckgxzbxcjmup2">
+                <td>
+                  <div class="user-cell">
+                    
+                      <img src="https://lh3.googleusercontent.com/a/ACg8ocKt7t7W5M9Mxs-bRVTA0mdVaVOhhdkUl68I9aQPUf6CV-lc80BE=s96-c" alt="suryansh yadav" class="user-avatar" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                      <div class="avatar-initials" style="display: none;">S</div>
+                    
+                    <div>
+                      <div class="user-name-title">suryansh yadav</div>
+                      <span class="uid-tag" title="Click to copy UID" onclick="navigator.clipboard.writeText('en48qEhNYwNqnS0CKgxzBXcjMup2'); this.textContent='Copied!'; setTimeout(() => this.textContent='en48qEhNYw...', 1500);">
+                        en48qEhNYw...
+                      </span>
+                    </div>
+                  </div>
+                </td>
+
+                <td>
+                  <div>
+                    <a href="mailto:suryansh30866@gmail.com" class="contact-link" title="Send email">
+                      <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                      </svg>
+                      suryansh30866@gmail.com
+                    </a>
+                  </div>
+                  
+                  <div class="phone-text">
+                    <a href="tel:+919235925051" class="contact-link" style="font-size: 12.5px;" title="Call student">
+                      <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
+                      </svg>
+                      +919235925051
+                    </a>
+                  </div>
+                  
+                </td>
+
+                <td>
+                  <span class="city-pill">Varanasi</span>
+                  
+                  <div class="location-sub">Lucknow, Uttar Pradesh, India</div>
+                  
+                </td>
+
+                <td>
+                  <div style="font-weight: 500; font-size: 13px; color: var(--ink);">Sep 05, 2026 • 04:17 PM</div>
+                  
+                  <div class="device-text">Google Chrome on Windows</div>
+                  
+                </td>
+
+                <td>
+                  <div>
+                    
+                      <span class="badge-status badge-completed">
+                        <svg width="11" height="11" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                        Profile Completed
+                      </span>
+                    
+                  </div>
+                  
+                  <div>
+                    <span class="badge-status badge-enrolled">
+                      Course Inquirer
+                    </span>
+                  </div>
+                  
+                </td>
+              </tr>
+              
+            
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+
+    <!-- Blog Management & Publishing Studio (Below Student Details) -->
+    <div class="panel-card" id="blogsStudioPanel">
+      <div class="panel-header-row">
+        <div class="panel-title-group">
+          <h2 class="panel-title">Blog Management &amp; Publishing</h2>
+          <span class="badge-count" id="adminBlogCountBadge">2 Published</span>
+        </div>
+        <div>
+          <button type="button" id="toggleWriteBlogBtn" class="btn-fill" style="padding: 8px 18px; font-size: 13px;">
+            <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-width="2.5" d="M12 4v16m8-8H4"></path>
+            </svg>
+            <span id="toggleWriteText">Write New Blog</span>
+          </button>
+        </div>
+      </div>
+      <p class="panel-subtext">
+        Publish educational articles, revision roadmaps, and announcements directly to the student portal.
+      </p>
+
+      <!-- Write Blog Form (Collapsible) -->
+      <div class="blog-editor-card" id="blogEditorCard">
+        <h3 style="font-size: 16px; font-weight: 600; margin-bottom: 14px; color: var(--ink);">Author New Blog Post</h3>
+
+        <div id="blogPublishStatus" style="display: none; padding: 10px 14px; border-radius: 8px; font-size: 13px; margin-bottom: 16px;"></div>
+
+        <form id="createBlogForm">
+          <div class="form-group-dash" style="margin-bottom: 14px;">
+            <label for="newBlogTitle">Blog Headline / Title *</label>
+            <input type="text" id="newBlogTitle" class="input-dash" placeholder="e.g. 5 Crucial Mistakes to Avoid in NEET Biology" required>
+          </div>
+
+          <div class="form-row-grid">
+            <div class="form-group-dash">
+              <label for="newBlogCategory">Category / Topic</label>
+              <select id="newBlogCategory" class="input-dash">
+                <option value="NEET Strategy">NEET Strategy</option>
+                <option value="Biology Notes">Biology Notes</option>
+                <option value="JEE Tips">JEE Tips</option>
+                <option value="Study Tips">Study Tips</option>
+                <option value="Announcements">Announcements</option>
+              </select>
+            </div>
+
+            <div class="form-group-dash">
+              <label for="newBlogAuthor">Author Name</label>
+              <input type="text" id="newBlogAuthor" class="input-dash" value="Nilanshu Sir" required>
+            </div>
+
+            <div class="form-group-dash">
+              <label for="newBlogReadTime">Estimated Reading Time</label>
+              <input type="text" id="newBlogReadTime" class="input-dash" value="4 min read">
+            </div>
+          </div>
+
+          <div class="form-group-dash" style="margin-bottom: 14px;">
+            <label for="newBlogCover">Cover Image URL (Optional)</label>
+            <input type="url" id="newBlogCover" class="input-dash" placeholder="https://images.unsplash.com/..." value="https://images.unsplash.com/photo-1532094349884-543bc11b234d?auto=format&fit=crop&w=800&q=80">
+            <div class="preset-chips">
+              <span style="font-size: 11px; color: var(--ink3); align-self: center;">Image Presets:</span>
+              <button type="button" class="preset-chip" onclick="document.getElementById('newBlogCover').value='https://images.unsplash.com/photo-1532094349884-543bc11b234d?auto=format&fit=crop&w=800&q=80'">Biology Lab</button>
+              <button type="button" class="preset-chip" onclick="document.getElementById('newBlogCover').value='https://images.unsplash.com/photo-1507668077129-56e32842fceb?auto=format&fit=crop&w=800&q=80'">Genetics / DNA</button>
+              <button type="button" class="preset-chip" onclick="document.getElementById('newBlogCover').value='https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&w=800&q=80'">Study Desk</button>
+            </div>
+          </div>
+
+          <div class="form-group-dash" style="margin-bottom: 14px;">
+            <label for="newBlogExcerpt">Short Excerpt / Summary</label>
+            <input type="text" id="newBlogExcerpt" class="input-dash" placeholder="1-2 sentences summarizing the article for the card preview">
+          </div>
+
+          <div class="form-group-dash" style="margin-bottom: 14px;">
+            <label for="newBlogContent">Full Article Body * (Supports ### Headings, **bold**, and bullet lists)</label>
+            <textarea id="newBlogContent" class="textarea-dash" placeholder="Write your educational insights here...&#10;&#10;### Key Concepts&#10;Explain the concepts with clarity.&#10;&#10;- Point 1&#10;- Point 2" required></textarea>
+          </div>
+
+          <div class="editor-actions">
+            <button type="submit" id="publishBlogBtn" class="btn-fill">
+              <span id="publishBtnText">Publish to Student Portal</span>
+            </button>
+            <button type="button" id="cancelWriteBtn" class="btn-ghost">Cancel</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Published Blogs Table -->
+      <div class="table-container">
+        <table class="users-table">
+          <thead>
+            <tr>
+              <th>Blog Article</th>
+              <th>Category</th>
+              <th>Author &amp; Date</th>
+              <th>Read Time</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="blogsTableBody">
+            
+              
+              <tr class="blog-row" id="blogRow_blog_genetics_shortcuts">
+                <td style="max-width: 320px;">
+                  <div style="display: flex; align-items: center; gap: 12px;">
+                    
+                    <img src="https://images.unsplash.com/photo-1507668077129-56e32842fceb?auto=format&amp;fit=crop&amp;w=800&amp;q=80" alt="" style="width: 44px; height: 36px; border-radius: 6px; object-fit: cover; flex-shrink: 0;">
+                    
+                    <div>
+                      <div style="font-weight: 600; color: var(--ink); font-size: 13.5px; line-height: 1.35;">How to Solve Complex Genetics Pedigree Charts in Under 60 Seconds</div>
+                      <div style="font-size: 11.5px; color: var(--ink3); display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; margin-top: 2px;">Simple elimination rules to determine autosomal dominant, recessive, and sex-linked inheritance patterns without confusion.</div>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <span class="city-pill">Biology Notes</span>
+                </td>
+                <td>
+                  <div style="font-weight: 500; color: var(--ink);">Nilanshu Sir</div>
+                  <div style="font-size: 11.5px; color: var(--ink3);">Sep 05, 2026</div>
+                </td>
+                <td>
+                  <div style="font-size: 12.5px; color: var(--ink2);">4 min read</div>
+                </td>
+                <td>
+                  <div style="display: flex; align-items: center; gap: 8px;">
+                    <a href="/pages/exam-portal.html#blogsSection" target="_blank" class="btn-view-blog" title="Preview on student portal">
+                      Preview
+                    </a>
+                    <button type="button" class="btn-delete-blog" onclick="deleteBlog('blog_genetics_shortcuts', 'How to Solve Complex Genetics Pedigree Charts in Under 60 Seconds')">
+                      Delete
+                    </button>
+                  </div>
+                </td>
+              </tr>
+              
+              <tr class="blog-row" id="blogRow_blog_neet_bio_680">
+                <td style="max-width: 320px;">
+                  <div style="display: flex; align-items: center; gap: 12px;">
+                    
+                    <img src="https://images.unsplash.com/photo-1532094349884-543bc11b234d?auto=format&amp;fit=crop&amp;w=800&amp;q=80" alt="" style="width: 44px; height: 36px; border-radius: 6px; object-fit: cover; flex-shrink: 0;">
+                    
+                    <div>
+                      <div style="font-weight: 600; color: var(--ink); font-size: 13.5px; line-height: 1.35;">Complete Strategy to Score 350+ in NEET Biology: Chapter-Wise Priority List</div>
+                      <div style="font-size: 11.5px; color: var(--ink3); display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; margin-top: 2px;">Master the high-yield chapters in Genetics, Biotechnology, and Human Physiology with targeted NCERT line-by-line reading.</div>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <span class="city-pill">NEET Strategy</span>
+                </td>
+                <td>
+                  <div style="font-weight: 500; color: var(--ink);">Nilanshu Sir</div>
+                  <div style="font-size: 11.5px; color: var(--ink3);">Sep 04, 2026</div>
+                </td>
+                <td>
+                  <div style="font-size: 12.5px; color: var(--ink2);">5 min read</div>
+                </td>
+                <td>
+                  <div style="display: flex; align-items: center; gap: 8px;">
+                    <a href="/pages/exam-portal.html#blogsSection" target="_blank" class="btn-view-blog" title="Preview on student portal">
+                      Preview
+                    </a>
+                    <button type="button" class="btn-delete-blog" onclick="deleteBlog('blog_neet_bio_680', 'Complete Strategy to Score 350+ in NEET Biology: Chapter-Wise Priority List')">
+                      Delete
+                    </button>
+                  </div>
+                </td>
+              </tr>
+              
+            
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+
+    <!-- Server-Side API Guard Panel -->
+    <div class="panel-card">
+      <div class="panel-header-row">
+        <h2 class="panel-title">Server-Side Admin API Guard</h2>
+        <button id="testApiBtn" class="btn-fill">
+          <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+          </svg>
+          Query /api/admin/overview
+        </button>
+      </div>
+      <p class="panel-subtext" style="margin-bottom: 16px;">
+        This API endpoint is protected server-side with <code>@admin_required</code>. Unauthenticated requests are rejected with status <code>401 Unauthorized</code>.
+      </p>
+      <pre id="apiResponse" class="output-console">// Click "Query /api/admin/overview" above to test protected API verification...</pre>
+    </div>
+
+    <!-- Active Security Controls -->
+    <div class="panel-card">
+      <h2 class="panel-title" style="margin-bottom: 18px;">Active Security Controls</h2>
+      <ul class="security-list">
+        <li class="security-item">
+          <div class="check-badge">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path>
+            </svg>
+          </div>
+          <div>
+            <strong>Private Obscure Route:</strong> Admin access is isolated to <code>/admin91939</code> with zero links or buttons on the public website.
+          </div>
+        </li>
+        <li class="security-item">
+          <div class="check-badge">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path>
+            </svg>
+          </div>
+          <div>
+            <strong>Cryptographic Scrypt Hashing:</strong> Credentials are validated against salted cryptographic hashes. Plaintext passwords never exist on disk or memory.
+          </div>
+        </li>
+        <li class="security-item">
+          <div class="check-badge">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path>
+            </svg>
+          </div>
+          <div>
+            <strong>Server-Side Session Guard:</strong> Enforced by HttpOnly, SameSite signed session cookies with <code>@admin_required</code> route guards on HTML and API routes.
+          </div>
+        </li>
+        <li class="security-item">
+          <div class="check-badge">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path>
+            </svg>
+          </div>
+          <div>
+            <strong>Rate Limiting &amp; Timing Defense:</strong> Failed attempts are throttled by IP (5 max per 10 mins) with constant-time verification and generic error responses.
+          </div>
+        </li>
+      </ul>
+    </div>
+  </main>
+
+  <script>
+    // Live Search in table
+    const searchInput = document.getElementById('userSearchInput');
+    const tableBody = document.getElementById('usersTableBody');
+
+    if (searchInput && tableBody) {
+      searchInput.addEventListener('input', () => {
+        const query = searchInput.value.trim().toLowerCase();
+        const rows = tableBody.querySelectorAll('.user-row');
+        let visibleCount = 0;
+
+        rows.forEach(row => {
+          const text = row.getAttribute('data-search') || '';
+          if (text.includes(query)) {
+            row.style.display = '';
+            visibleCount++;
+          } else {
+            row.style.display = 'none';
+          }
+        });
+
+        // Toggle empty search message if no matches
+        let emptySearchRow = document.getElementById('emptySearchRow');
+        if (visibleCount === 0 && rows.length > 0) {
+          if (!emptySearchRow) {
+            emptySearchRow = document.createElement('tr');
+            emptySearchRow.id = 'emptySearchRow';
+            emptySearchRow.innerHTML = `
+              <td colspan="5">
+                <div class="empty-state">
+                  <p style="font-weight: 500; color: var(--ink);">No matching students found</p>
+                  <p style="font-size: 13px;">Try searching with a different name, email, or city.</p>
+                </div>
+              </td>
+            `;
+            tableBody.appendChild(emptySearchRow);
+          }
+          emptySearchRow.style.display = '';
+        } else if (emptySearchRow) {
+          emptySearchRow.style.display = 'none';
+        }
+      });
+    }
+
+    // Refresh directory from Firebase API
+    const refreshBtn = document.getElementById('refreshUsersBtn');
+    const syncBtnText = document.getElementById('syncBtnText');
+
+    if (refreshBtn) {
+      refreshBtn.addEventListener('click', async () => {
+        refreshBtn.disabled = true;
+        refreshBtn.classList.add('syncing');
+        syncBtnText.textContent = 'Syncing...';
+
+        try {
+          const res = await fetch('/api/admin/users', {
+            headers: { 'Accept': 'application/json' }
+          });
+          const data = await res.json();
+
+          if (res.ok && data.success) {
+            renderUsers(data.users);
+            document.getElementById('statUserCount').textContent = `${data.count} Students`;
+            document.getElementById('tableCountBadge').textContent = `${data.count} Total`;
+            syncBtnText.textContent = 'Synced!';
+            setTimeout(() => { syncBtnText.textContent = 'Sync Firebase'; }, 2000);
+          } else {
+            syncBtnText.textContent = 'Sync Failed';
+            setTimeout(() => { syncBtnText.textContent = 'Sync Firebase'; }, 2000);
+          }
+        } catch (err) {
+          syncBtnText.textContent = 'Error';
+          setTimeout(() => { syncBtnText.textContent = 'Sync Firebase'; }, 2000);
+        } finally {
+          refreshBtn.disabled = false;
+          refreshBtn.classList.remove('syncing');
+        }
+      });
+    }
+
+    function renderUsers(users) {
+      if (!tableBody) return;
+      tableBody.innerHTML = '';
+
+      if (!users || users.length === 0) {
+        tableBody.innerHTML = `
+          <tr id="emptyTableRow">
+            <td colspan="5">
+              <div class="empty-state">
+                <p style="font-weight: 500; color: var(--ink);">No registered students found</p>
+                <p style="font-size: 13px;">New user profiles will appear here as students log in.</p>
+              </div>
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      users.forEach(u => {
+        const row = document.createElement('tr');
+        row.className = 'user-row';
+        row.setAttribute('data-search', `${u.name} ${u.email} ${u.phone} ${u.city} ${u.uid}`.toLowerCase());
+
+        const avatarHtml = u.photoURL 
+          ? `<img src="${u.photoURL}" alt="${u.name}" class="user-avatar" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+             <div class="avatar-initials" style="display:none;">${(u.name[0] || 'S').toUpperCase()}</div>`
+          : `<div class="avatar-initials">${(u.name[0] || 'S').toUpperCase()}</div>`;
+
+        row.innerHTML = `
+          <td>
+            <div class="user-cell">
+              ${avatarHtml}
+              <div>
+                <div class="user-name-title">${u.name}</div>
+                <span class="uid-tag" title="Click to copy UID" onclick="navigator.clipboard.writeText('${u.uid}'); this.textContent='Copied!'; setTimeout(() => this.textContent='${u.uid.slice(0, 10)}...', 1500);">
+                  ${u.uid.slice(0, 10)}...
+                </span>
+              </div>
+            </div>
+          </td>
+          <td>
+            <div>
+              <a href="mailto:${u.email}" class="contact-link" title="Send email">
+                <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                </svg>
+                ${u.email}
+              </a>
+            </div>
+            ${u.phone && u.phone !== '-' ? `
+              <div class="phone-text">
+                <a href="tel:${u.phone}" class="contact-link" style="font-size: 12.5px;" title="Call student">
+                  <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
+                  </svg>
+                  ${u.phone}
+                </a>
+              </div>
+            ` : `<div class="phone-text" style="color: var(--ink4);">No phone</div>`}
+          </td>
+          <td>
+            <span class="city-pill">${u.city}</span>
+            ${u.lastLocation && u.lastLocation !== '-' ? `<div class="location-sub">${u.lastLocation}</div>` : ''}
+          </td>
+          <td>
+            <div style="font-weight: 500; font-size: 13px; color: var(--ink);">${u.lastLogin}</div>
+            ${u.lastDevice && u.lastDevice !== '-' ? `<div class="device-text">${u.lastDevice}</div>` : ''}
+          </td>
+          <td>
+            <div>
+              ${u.profileCompleted 
+                ? `<span class="badge-status badge-completed">
+                     <svg width="11" height="11" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path>
+                     </svg>
+                     Profile Completed
+                   </span>`
+                : `<span class="badge-status" style="background:#f3f4f6; color:#4b5563; border:1px solid #e5e7eb;">Pending Info</span>`
+              }
+            </div>
+            ${u.hasBoughtCourse ? `<div><span class="badge-status badge-enrolled">Course Inquirer</span></div>` : ''}
+          </td>
+        `;
+        tableBody.appendChild(row);
+      });
+    }
+
+    // Protected API test button
+    document.getElementById('testApiBtn').addEventListener('click', async () => {
+      const consoleBox = document.getElementById('apiResponse');
+      consoleBox.textContent = 'Querying GET /api/admin/overview...';
+      try {
+        const res = await fetch('/api/admin/overview', {
+          headers: { 'Accept': 'application/json' }
+        });
+        const data = await res.json();
+        consoleBox.textContent = JSON.stringify(data, null, 2);
+      } catch (err) {
+        consoleBox.textContent = 'Request failed: ' + err.message;
+      }
+    });
+  
+    // ── Admin Blog Publishing Studio ──
+    const toggleWriteBtn = document.getElementById('toggleWriteBlogBtn');
+    const toggleWriteText = document.getElementById('toggleWriteText');
+    const blogEditorCard = document.getElementById('blogEditorCard');
+    const cancelWriteBtn = document.getElementById('cancelWriteBtn');
+    const createBlogForm = document.getElementById('createBlogForm');
+    const publishBtnText = document.getElementById('publishBtnText');
+    const publishBtn = document.getElementById('publishBlogBtn');
+    const publishStatus = document.getElementById('blogPublishStatus');
+
+    if (toggleWriteBtn && blogEditorCard) {
+      toggleWriteBtn.addEventListener('click', () => {
+        const isOpen = blogEditorCard.classList.contains('open');
+        if (isOpen) {
+          blogEditorCard.classList.remove('open');
+          toggleWriteText.textContent = 'Write New Blog';
+        } else {
+          blogEditorCard.classList.add('open');
+          toggleWriteText.textContent = 'Close Editor';
+          document.getElementById('newBlogTitle').focus();
+        }
+      });
+    }
+
+    if (cancelWriteBtn && blogEditorCard) {
+      cancelWriteBtn.addEventListener('click', () => {
+        blogEditorCard.classList.remove('open');
+        toggleWriteText.textContent = 'Write New Blog';
+      });
+    }
+
+    if (createBlogForm) {
+      createBlogForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        publishBtn.disabled = true;
+        publishBtnText.textContent = 'Publishing to Portal...';
+        publishStatus.style.display = 'none';
+
+        const payload = {
+          title: document.getElementById('newBlogTitle').value.trim(),
+          category: document.getElementById('newBlogCategory').value,
+          author: document.getElementById('newBlogAuthor').value.trim(),
+          readTime: document.getElementById('newBlogReadTime').value.trim(),
+          coverImage: document.getElementById('newBlogCover').value.trim(),
+          excerpt: document.getElementById('newBlogExcerpt').value.trim(),
+          content: document.getElementById('newBlogContent').value.trim()
+        };
+
+        try {
+          const res = await fetch('/api/admin/blogs', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json'
+            },
+            body: JSON.stringify(payload)
+          });
+
+          const data = await res.json();
+
+          if (res.ok && data.success) {
+            publishStatus.textContent = '✓ Blog successfully published to student portal!';
+            publishStatus.style.background = '#ecfdf5';
+            publishStatus.style.color = '#065f46';
+            publishStatus.style.border = '1px solid #a7f3d0';
+            publishStatus.style.display = 'block';
+
+            createBlogForm.reset();
+            document.getElementById('newBlogAuthor').value = 'Nilanshu Sir';
+            document.getElementById('newBlogReadTime').value = '4 min read';
+
+            // Refresh blogs list
+            await reloadAdminBlogs();
+
+            setTimeout(() => {
+              blogEditorCard.classList.remove('open');
+              toggleWriteText.textContent = 'Write New Blog';
+              publishStatus.style.display = 'none';
+            }, 1800);
+          } else {
+            publishStatus.textContent = data.message || 'Failed to publish blog.';
+            publishStatus.style.background = '#fef2f2';
+            publishStatus.style.color = '#991b1b';
+            publishStatus.style.border = '1px solid #fecaca';
+            publishStatus.style.display = 'block';
+          }
+        } catch (err) {
+          publishStatus.textContent = 'Network error: ' + err.message;
+          publishStatus.style.background = '#fef2f2';
+          publishStatus.style.color = '#991b1b';
+          publishStatus.style.border = '1px solid #fecaca';
+          publishStatus.style.display = 'block';
+        } finally {
+          publishBtn.disabled = false;
+          publishBtnText.textContent = 'Publish to Student Portal';
+        }
+      });
+    }
+
+    async function deleteBlog(blogId, blogTitle) {
+      if (!confirm(`Are you sure you want to delete blog: "${blogTitle}"?`)) return;
+
+      try {
+        const res = await fetch(`/api/admin/blogs/${blogId}`, {
+          method: 'DELETE',
+          headers: { 'Accept': 'application/json' }
+        });
+        const data = await res.json();
+
+        if (res.ok && data.success) {
+          const row = document.getElementById(`blogRow_${blogId}`);
+          if (row) row.remove();
+          await reloadAdminBlogs();
+        } else {
+          alert(data.message || 'Failed to delete blog.');
+        }
+      } catch (err) {
+        alert('Network error: ' + err.message);
+      }
+    }
+
+    async function reloadAdminBlogs() {
+      try {
+        const res = await fetch('/api/blogs', { headers: { 'Accept': 'application/json' } });
+        const data = await res.json();
+        if (res.ok && data.success) {
+          const badge = document.getElementById('adminBlogCountBadge');
+          if (badge) badge.textContent = `${data.count} Published`;
+          renderAdminBlogsTable(data.blogs);
+        }
+      } catch (_) {}
+    }
+
+    function renderAdminBlogsTable(blogs) {
+      const tbody = document.getElementById('blogsTableBody');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+
+      if (!blogs || blogs.length === 0) {
+        tbody.innerHTML = `
+          <tr id="emptyBlogsRow">
+            <td colspan="5">
+              <div class="empty-state">
+                <p style="font-weight: 500; color: var(--ink);">No blogs published yet</p>
+                <p style="font-size: 13px;">Click "+ Write New Blog" above to author your first article for students.</p>
+              </div>
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      blogs.forEach(b => {
+        const tr = document.createElement('tr');
+        tr.id = `blogRow_${b.id}`;
+        tr.className = 'blog-row';
+
+        const imgHtml = b.coverImage 
+          ? `<img src="${b.coverImage}" alt="" style="width: 44px; height: 36px; border-radius: 6px; object-fit: cover; flex-shrink: 0;">`
+          : '';
+
+        tr.innerHTML = `
+          <td style="max-width: 320px;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+              ${imgHtml}
+              <div>
+                <div style="font-weight: 600; color: var(--ink); font-size: 13.5px; line-height: 1.35;">${b.title}</div>
+                <div style="font-size: 11.5px; color: var(--ink3); display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; margin-top: 2px;">${b.excerpt || ''}</div>
+              </div>
+            </div>
+          </td>
+          <td><span class="city-pill">${b.category || 'General'}</span></td>
+          <td>
+            <div style="font-weight: 500; color: var(--ink);">${b.author || 'Nilanshu Sir'}</div>
+            <div style="font-size: 11.5px; color: var(--ink3);">${b.publishedAtFormatted || ''}</div>
+          </td>
+          <td><div style="font-size: 12.5px; color: var(--ink2);">${b.readTime || '4 min read'}</div></td>
+          <td>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <a href="/pages/exam-portal.html#blogsSection" target="_blank" class="btn-view-blog" title="Preview on student portal">
+                Preview
+              </a>
+              <button type="button" class="btn-delete-blog" onclick="deleteBlog('${b.id}', '${(b.title || '').replace(/'/g, "\\'")}')">
+                Delete
+              </button>
+            </div>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+  </script>
+</body>
+</html>

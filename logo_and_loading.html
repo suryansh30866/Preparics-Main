@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Wave Loading</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #ffffff; overflow: hidden; }
+    canvas { display: block; }
+    
+    #waveContainer {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  </style>
+</head>
+<body>
+  <div id="waveContainer">
+    <canvas id="waveCanvas"></canvas>
+  </div>
+
+<script>
+(function () {
+  'use strict';
+
+  const canvas = document.getElementById('waveCanvas');
+  const ctx = canvas.getContext('2d');
+
+  const N = 7;
+  let BAR_W = 30;
+  let GAP = 40;
+  let R = BAR_W / 2;
+
+  let BASE_H = [];
+  let AMPLITUDE = [];
+
+  const BASE_RATIOS = [0.28, 0.38, 0.50, 0.62, 0.50, 0.38, 0.28];
+  const AMP_RATIOS  = [0.04, 0.06, 0.08, 0.10, 0.08, 0.06, 0.04];
+
+  let dpr = window.devicePixelRatio || 1;
+  let W, H;
+  let mouse = { x: -1 };
+  let last = performance.now();
+
+  const phase = Array.from({ length: N }, (_, i) => i * 0.9 + Math.random() * 0.6);
+  const spd   = Array.from({ length: N }, () => 0.5 + Math.random() * 0.3);
+
+  const pos = new Float32Array(N);
+  const vel = new Float32Array(N).fill(0);
+  const STIFFNESS = 100;
+  const DAMPING = 16;
+
+  const innerLevel = new Float32Array(N);
+  const innerVel   = new Float32Array(N).fill(0);
+  const INNER_STIFFNESS = 135;
+  const INNER_DAMPING = 21;
+
+  const liquidSeed  = Array.from({ length: N }, () => Math.random() * Math.PI * 2);
+  const shimmerSeed = Array.from({ length: N }, () => Math.random() * 100);
+
+  // Exit animation state
+  let exitAnimating = false;
+  let exitStartTime = 0;
+  const EXIT_DURATION = 600; // 0.6 seconds for smooth fast exit animation
+  const exitOffsetX = new Float32Array(N).fill(0);
+  const exitOffsetY = new Float32Array(N).fill(0);
+
+  function setup() {
+    dpr = window.devicePixelRatio || 1;
+    W = window.innerWidth;
+    H = window.innerHeight;
+
+    // Fluid responsive sizing for mobile viewports
+    const availableW = Math.min(W - 24, 450);
+    const scale = Math.min(1, Math.max(0.48, availableW / 450));
+    BAR_W = Math.round(30 * scale);
+    GAP = Math.round(40 * scale);
+    R = BAR_W / 2;
+
+    canvas.width  = Math.round(W * dpr);
+    canvas.height = Math.round(H * dpr);
+    canvas.style.width  = W + 'px';
+    canvas.style.height = H + 'px';
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+    for (let i = 0; i < N; i++) {
+      BASE_H[i]    = H * BASE_RATIOS[i];
+      AMPLITUDE[i] = H * AMP_RATIOS[i];
+      pos[i]       = BASE_H[i];
+      innerLevel[i]= BASE_H[i] * 0.72;
+    }
+  }
+
+  function wave(t, ph, s) {
+    return (
+      Math.sin(t * s + ph) * 0.50 +
+      Math.sin(t * s * 2.1 + ph * 1.3) * 0.30 +
+      Math.sin(t * s * 0.5 + ph * 0.8) * 0.20
+    );
+  }
+
+  function liquidWave(xn, t, idx, amp) {
+    return (
+      Math.sin(xn * 8.0  + t * 2.2 + liquidSeed[idx]) * amp * 0.55 +
+      Math.sin(xn * 14.0 - t * 1.5 + liquidSeed[idx] * 0.7) * amp * 0.25 +
+      Math.sin(xn * 22.0 + t * 3.3 + liquidSeed[idx] * 1.4) * amp * 0.12
+    );
+  }
+
+  function shimmerNoise(xn, yn, t, idx) {
+    return (
+      0.5 +
+      0.25 * Math.sin(xn * 18 + t * 1.4 + shimmerSeed[idx]) +
+      0.15 * Math.sin(yn * 26 - t * 2.1 + shimmerSeed[idx] * 0.7) +
+      0.10 * Math.sin((xn + yn) * 20 + t * 2.8)
+    );
+  }
+
+  function roundedBarPath(x, top, h) {
+    ctx.beginPath();
+    ctx.roundRect(x, top, BAR_W, h, R);
+  }
+
+  function drawLiquidFill(x, top, h, fillH, brightness, t, idx) {
+    const left  = x;
+    const right = x + BAR_W;
+    const bottom = top + h;
+    const fillTopBase = bottom - fillH;
+    const surfAmp = Math.min(10, Math.max(4, fillH * 0.06));
+
+    ctx.save();
+    roundedBarPath(x, top, h);
+    ctx.clip();
+
+    const fluidGrad = ctx.createLinearGradient(x, fillTopBase, x, bottom);
+    fluidGrad.addColorStop(0,    `rgba(50,50,50,${(brightness * 0.12).toFixed(3)})`);
+    fluidGrad.addColorStop(0.45, `rgba(50,50,50,${(brightness * 0.22).toFixed(3)})`);
+    fluidGrad.addColorStop(1,    `rgba(50,50,50,${(brightness * 0.06).toFixed(3)})`);
+    ctx.fillStyle = fluidGrad;
+
+    ctx.beginPath();
+    for (let s = 0; s <= 24; s++) {
+      const xn = s / 24;
+      const px = left + xn * BAR_W;
+      const py = fillTopBase + liquidWave(xn, t, idx, surfAmp);
+      if (s === 0) ctx.moveTo(px, py);
+      else ctx.lineTo(px, py);
+    }
+    ctx.lineTo(right, bottom);
+    ctx.lineTo(left, bottom);
+    ctx.closePath();
+    ctx.fill();
+
+    for (let y = fillTopBase; y < bottom; y += 3.2) {
+      const yn = (y - fillTopBase) / Math.max(1, fillH);
+      const alpha = (0.018 + yn * 0.03) * brightness;
+      ctx.fillStyle = `rgba(50,50,50,${alpha.toFixed(3)})`;
+      for (let s = 0; s < 8; s++) {
+        const xn = s / 7;
+        const px = left + 3 + xn * (BAR_W - 6);
+        const n  = shimmerNoise(xn, yn, t, idx);
+        const w  = 1 + n * 1.2;
+        ctx.fillRect(px, y, w, 1);
+      }
+    }
+
+    ctx.strokeStyle = `rgba(50,50,50,${(brightness * 0.22).toFixed(3)})`;
+    ctx.lineWidth = 1.2;
+    ctx.beginPath();
+    for (let s = 0; s <= 24; s++) {
+      const xn = s / 24;
+      const px = left + xn * BAR_W;
+      const py = fillTopBase + liquidWave(xn, t, idx, surfAmp);
+      if (s === 0) ctx.moveTo(px, py);
+      else ctx.lineTo(px, py);
+    }
+    ctx.stroke();
+
+    for (let b = 0; b < 3; b++) {
+      const pr = 1.2 + b * 0.45;
+      const bx = left + 7 + ((Math.sin(t * (0.8 + b * 0.3) + idx * 1.7 + b) * 0.5 + 0.5) * (BAR_W - 14));
+      const rise = ((t * (18 + b * 7) + idx * 23 + b * 31) % Math.max(30, fillH + 20));
+      const by   = bottom - rise;
+      if (by > fillTopBase + 4 && by < bottom - 4) {
+        ctx.fillStyle = `rgba(50,50,50,${(0.08 * brightness).toFixed(3)})`;
+        ctx.beginPath();
+        ctx.arc(bx, by, pr, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    ctx.restore();
+  }
+
+  function drawBar(x, cy, h, brightness, t, idx) {
+    const halfH = h / 2;
+    const top   = cy - halfH;
+
+    const shell = ctx.createLinearGradient(x, top, x, top + h);
+    shell.addColorStop(0,    `rgba(50,50,50,${(brightness * 0.05).toFixed(3)})`);
+    shell.addColorStop(0.18, `rgba(50,50,50,${(brightness * 0.45).toFixed(3)})`);
+    shell.addColorStop(0.50, `rgba(50,50,50,${(brightness * 0.95).toFixed(3)})`);
+    shell.addColorStop(0.82, `rgba(50,50,50,${(brightness * 0.45).toFixed(3)})`);
+    shell.addColorStop(1,    `rgba(50,50,50,${(brightness * 0.05).toFixed(3)})`);
+
+    ctx.fillStyle = shell;
+    roundedBarPath(x, top, h);
+    ctx.fill();
+
+    const edgeGlow = ctx.createLinearGradient(x, top, x + BAR_W, top);
+    edgeGlow.addColorStop(0,    'rgba(50,50,50,0.18)');
+    edgeGlow.addColorStop(0.35, 'rgba(50,50,50,0.05)');
+    edgeGlow.addColorStop(1,    'rgba(50,50,50,0)');
+    ctx.fillStyle = edgeGlow;
+    ctx.save();
+    roundedBarPath(x, top, h);
+    ctx.clip();
+    ctx.fillRect(x, top, BAR_W, h);
+    ctx.restore();
+
+    drawLiquidFill(x, top, h, innerLevel[idx], brightness, t, idx);
+  }
+
+  function frame(now) {
+    const dt = Math.min((now - last) / 1000, 0.05);
+    last = now;
+    const t = now / 1000;
+
+    ctx.clearRect(0, 0, W, H);
+
+    const cx = W / 2;
+    const cy = H / 2;
+    const totalW = N * BAR_W + (N - 1) * GAP;
+    const startX = cx - totalW / 2;
+
+    // Handle exit animation
+    if (exitAnimating) {
+      const elapsed = now - exitStartTime;
+      const progress = Math.min(elapsed / EXIT_DURATION, 1);
+      
+      for (let i = 0; i < N; i++) {
+        // Left side bars move left at constant high speed
+        if (i < 3) {
+          exitOffsetX[i] = -2000 * progress; // Linear motion, 2000px/s leftward
+        }
+        // Right side bars move right at constant high speed
+        else if (i > 3) {
+          exitOffsetX[i] = 2000 * progress; // Linear motion, 2000px/s rightward
+        }
+        // Center bar moves up at constant high speed
+        else {
+          exitOffsetY[i] = -2800 * progress; // Linear motion, 2800px/s upward
+        }
+      }
+      
+      if (progress >= 1) {
+        exitAnimating = false;
+      }
+    }
+
+    for (let i = 0; i < N; i++) {
+      const wv = wave(t, phase[i], spd[i]);
+      let target = BASE_H[i] + wv * AMPLITUDE[i];
+
+      if (!exitAnimating && mouse.x >= 0) {
+        const barCx = startX + i * (BAR_W + GAP) + BAR_W / 2;
+        const dist  = Math.abs(barCx - mouse.x);
+        const pull  = Math.max(0, 1 - dist / 140);
+        target += pull * AMPLITUDE[i] * 2.0;
+      }
+
+      const acc = (target - pos[i]) * STIFFNESS - vel[i] * DAMPING;
+      vel[i] += acc * dt;
+      pos[i] += vel[i] * dt;
+      pos[i]  = Math.max(H * 0.04, pos[i]);
+
+      const liquidTarget =
+        pos[i] * 0.68 +
+        Math.sin(t * 1.4 + i * 0.9 + liquidSeed[i]) * (AMPLITUDE[i] * 0.22);
+
+      const innerAcc = (liquidTarget - innerLevel[i]) * INNER_STIFFNESS - innerVel[i] * INNER_DAMPING;
+      innerVel[i]   += innerAcc * dt;
+      innerLevel[i] += innerVel[i] * dt;
+      innerLevel[i]  = Math.max(pos[i] * 0.18, Math.min(pos[i] * 0.92, innerLevel[i]));
+
+      const distRatio = Math.abs(i - (N - 1) / 2) / ((N - 1) / 2);
+      const brightness = 1.0 - distRatio * 0.62;
+
+      const barX = startX + i * (BAR_W + GAP) + exitOffsetX[i];
+      const barY = cy + exitOffsetY[i];
+      drawBar(barX, barY, pos[i], brightness, t, i);
+    }
+
+    requestAnimationFrame(frame);
+  }
+
+  // Expose exit animation function
+  window.triggerExitAnimation = function() {
+    exitAnimating = true;
+    exitStartTime = performance.now();
+  };
+
+  window.addEventListener('mousemove',  e => { mouse.x = e.clientX; });
+  window.addEventListener('mouseleave', () => { mouse.x = -1; });
+  window.addEventListener('touchmove',  e => { mouse.x = e.touches[0].clientX; }, { passive: true });
+  window.addEventListener('touchend',   () => { mouse.x = -1; });
+  window.addEventListener('resize', setup);
+
+  setup();
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>

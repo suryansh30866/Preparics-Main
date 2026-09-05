@@ -1,0 +1,351 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>JEE Main & Advanced Preparation | Preparics</title>
+  <link rel="icon" type="image/png" href="logo.png">
+  <link rel="shortcut icon" href="favicon.ico">
+  <link rel="apple-touch-icon" href="logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+:root {
+  --ink: #0d0d0d;
+  --muted: #5d5d5d;
+  --line: #e4e4e4;
+  --soft: #f7f7f7;
+  --max: 1120px;
+}
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+html {
+  -webkit-text-size-adjust: 100%;
+}
+body {
+  margin: 0;
+  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  color: var(--ink);
+  line-height: 1.55;
+  background: #ffffff;
+  overflow-x: hidden;
+  width: 100%;
+}
+a {
+  color: inherit;
+}
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Nav */
+.nav {
+  height: 68px;
+  max-width: var(--max);
+  margin: auto;
+  padding: 0 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+.brand img {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+.back {
+  font-size: 13.5px;
+  text-decoration: none;
+  padding: 8px 16px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  white-space: nowrap;
+  transition: background 0.15s ease, border-color 0.15s ease;
+  flex-shrink: 0;
+}
+.back:hover {
+  background: var(--soft);
+  border-color: #ccc;
+}
+
+/* Main sections */
+.hero, .section {
+  max-width: var(--max);
+  margin: auto;
+  padding: 72px 32px;
+  border-top: 1px solid var(--line);
+  width: 100%;
+}
+.eyebrow {
+  font-size: 12px;
+  letter-spacing: .11em;
+  text-transform: uppercase;
+  color: #777;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+.hero-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 56px;
+  align-items: center;
+}
+.hero h1 {
+  font-size: clamp(32px, 5.5vw, 68px);
+  line-height: 1.05;
+  letter-spacing: -.045em;
+  font-weight: 500;
+  margin: 12px 0 18px;
+  word-wrap: break-word;
+}
+.intro {
+  font-size: clamp(15px, 1.8vw, 18px);
+  color: var(--muted);
+  max-width: 520px;
+  line-height: 1.65;
+  margin-bottom: 24px;
+}
+.hero img {
+  width: 100%;
+  aspect-ratio: 1.25;
+  object-fit: cover;
+  border-radius: 12px;
+  display: block;
+}
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--ink);
+  color: #fff;
+  text-decoration: none;
+  padding: 12px 24px;
+  border-radius: 999px;
+  font-weight: 500;
+  font-size: 14px;
+  min-height: 44px;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+.btn:hover {
+  opacity: 0.88;
+  transform: translateY(-1px);
+}
+
+.section h2 {
+  font-size: clamp(26px, 3.8vw, 42px);
+  letter-spacing: -.03em;
+  font-weight: 500;
+  margin: 8px 0 28px;
+  line-height: 1.15;
+}
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  overflow: hidden;
+}
+.card {
+  padding: 28px;
+  border-right: 1px solid var(--line);
+}
+.card:last-child {
+  border-right: none;
+}
+.card h3 {
+  font-size: 18px;
+  margin: 0 0 10px;
+  font-weight: 600;
+  letter-spacing: -.01em;
+}
+.card p, .section > p {
+  color: var(--muted);
+  font-size: 14.5px;
+  line-height: 1.6;
+}
+
+.journey {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+.step {
+  background: var(--soft);
+  padding: 24px;
+  border-radius: 10px;
+  border: 1px solid rgba(0,0,0,0.03);
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--muted);
+}
+.step strong {
+  display: block;
+  font-size: 12.5px;
+  letter-spacing: .08em;
+  color: var(--ink);
+  margin-bottom: 20px;
+  font-weight: 600;
+}
+
+.cta {
+  background: var(--ink);
+  color: #fff;
+  border-radius: 16px;
+  padding: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+.cta h2 {
+  margin: 0;
+  font-size: clamp(24px, 3.5vw, 34px);
+  line-height: 1.2;
+}
+.cta .btn {
+  background: #fff;
+  color: var(--ink);
+  margin: 0;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.cta .btn:hover {
+  background: #f0f0f0;
+}
+
+/* Tablet */
+@media (max-width: 900px) {
+  .hero-grid {
+    grid-template-columns: 1fr;
+    gap: 36px;
+  }
+  .journey {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .grid {
+    grid-template-columns: 1fr;
+    border-right: 1px solid var(--line);
+  }
+  .card {
+    border-right: none;
+    border-bottom: 1px solid var(--line);
+  }
+  .card:last-child {
+    border-bottom: none;
+  }
+}
+
+/* Mobile */
+@media (max-width: 640px) {
+  .nav {
+    height: 58px;
+    padding: 0 16px;
+  }
+  .brand {
+    font-size: 15px;
+    gap: 8px;
+  }
+  .brand img {
+    width: 28px;
+    height: 28px;
+  }
+  .back {
+    font-size: 12px;
+    padding: 6px 12px;
+    min-height: 36px;
+    display: inline-flex;
+    align-items: center;
+  }
+  .hero, .section {
+    padding: 44px 16px;
+  }
+  .hero h1 {
+    font-size: clamp(28px, 8vw, 40px);
+    margin: 8px 0 14px;
+  }
+  .btn {
+    width: 100%;
+    max-width: 100%;
+  }
+  .journey {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .step {
+    padding: 18px 16px;
+  }
+  .card {
+    padding: 20px 16px;
+  }
+  .cta {
+    padding: 28px 20px;
+    flex-direction: column;
+    align-items: stretch;
+    text-align: left;
+    border-radius: 12px;
+    gap: 20px;
+  }
+  .cta .btn {
+    width: 100%;
+  }
+}
+
+/* Extra Small Phones (320px - 360px) */
+@media (max-width: 360px) {
+  .nav {
+    padding: 0 12px;
+    gap: 6px;
+  }
+  .brand {
+    font-size: 14px;
+    gap: 6px;
+  }
+  .back {
+    font-size: 11px;
+    padding: 5px 9px;
+  }
+  .hero, .section {
+    padding: 36px 12px;
+  }
+  .hero h1 {
+    font-size: 26px;
+  }
+  .card {
+    padding: 16px 12px;
+  }
+  .step {
+    padding: 16px 12px;
+  }
+  .cta {
+    padding: 22px 14px;
+  }
+}
+</style>
+</head>
+<body>
+  <nav class="nav"><a class="brand" href="index.html"><img src="logo.png" alt="Preparics logo">Preparics</a><a class="back" href="index.html#programmes">← All programmes</a></nav>
+  <main>
+    <section class="hero"><div class="hero-grid"><div><div class="eyebrow">Engineering entrance</div><h1>JEE Main &<br>Advanced</h1><p class="intro">Build the concepts, speed, and calm problem-solving needed for India’s most demanding engineering entrance examinations.</p><a class="btn" href="mailto:info@preparics.in?subject=JEE%20programme%20enquiry">Enquire about JEE</a></div><img src="IIT BOMBAY.jpg" alt="IIT Bombay campus"></div></section>
+    <section class="section"><div class="eyebrow">What you will study</div><h2>A strong foundation in every subject.</h2><div class="grid"><article class="card"><h3>Physics</h3><p>Learn to translate ideas into diagrams, equations, and confident solutions—from mechanics and electricity to modern physics.</p></article><article class="card"><h3>Chemistry</h3><p>Connect physical, organic, and inorganic chemistry through clear theory, memorable revision systems, and frequent practice.</p></article><article class="card"><h3>Mathematics</h3><p>Develop the precision to work through algebra, calculus, coordinate geometry, and problem-solving under time pressure.</p></article></div></section>
+    <section class="section"><div class="eyebrow">How we prepare you</div><h2>A plan that improves with you.</h2><div class="journey"><div class="step"><strong>01 · Diagnose</strong>Start with a baseline test and identify the topics that need attention.</div><div class="step"><strong>02 · Learn</strong>Build concepts in focused classes, then clear doubts before they become gaps.</div><div class="step"><strong>03 · Practise</strong>Use graded sheets and AI-powered questions to turn every weak area into a strength.</div><div class="step"><strong>04 · Perform</strong>Take timed mocks, analyse errors, and refine your strategy for the real exam.</div></div></section>
+    <section class="section"><div class="cta"><div><div class="eyebrow" style="color:#bbb">Your next step</div><h2>Ready to start your JEE journey?</h2></div><a class="btn" href="mailto:info@preparics.in?subject=JEE%20programme%20enquiry">Talk to Preparics</a></div></section>
+  </main>
+</body>
+</html>

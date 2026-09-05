@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --white: #ffffff;
+  --ink: #0d0d0d;
+  --ink2: #444444;
+  --ink3: #888888;
+  --line: #e4e4e4;
+  --bg: #f7f7f7;
+  --font: 'DM Sans', sans-serif;
+  --max: 1120px;
+}
+body {
+  font-family: var(--font);
+  background: var(--white);
+  color: var(--ink);
+  line-height: 1.5;
+}
+
+.map-section { padding: 0; border-bottom: 1px solid var(--line); }
+.map-header {
+  max-width: var(--max); margin: 0 auto;
+  padding: 72px 40px 48px;
+}
+.sec-label {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink3);
+  margin-bottom: 12px;
+}
+.map-header h2 {
+  font-size: clamp(32px, 4vw, 52px);
+  font-weight: 400; letter-spacing: -0.025em; line-height: 1.08;
+  margin-bottom: 14px;
+}
+.map-header p { font-size: 15px; color: var(--ink2); font-weight: 300; }
+
+.map-container {
+  position: relative;
+  height: 520px;
+  border-top: 1px solid var(--line);
+  background: #f0ede5;
+  overflow: hidden;
+}
+
+.google-map-iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  display: block;
+  filter: contrast(102%) saturate(90%);
+}
+
+.map-info-card {
+  position: absolute;
+  top: 36px;
+  left: 48px;
+  z-index: 10;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 16px;
+  padding: 24px 28px;
+  max-width: 310px;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.08), 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+.map-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #1a9e4a;
+  margin-bottom: 10px;
+}
+.map-badge-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #1a9e4a;
+}
+.map-info-card h3 {
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  margin-bottom: 6px;
+  color: var(--ink);
+}
+.map-info-card p {
+  font-size: 13.5px;
+  color: var(--ink2);
+  line-height: 1.6;
+  margin-bottom: 20px;
+  font-weight: 400;
+}
+.map-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.map-info-card a.directions-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #fff;
+  background: var(--ink);
+  text-decoration: none;
+  padding: 9px 18px;
+  border-radius: 999px;
+  transition: transform 0.12s ease, background 0.15s ease;
+}
+.map-info-card a.directions-btn:hover {
+  background: #262626;
+  transform: translateY(-1px);
+}
+.map-info-card a.view-larger-btn {
+  display: inline-flex;
+  align-items: center;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink2);
+  text-decoration: none;
+  padding: 9px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: #fff;
+  transition: background 0.15s ease;
+}
+.map-info-card a.view-larger-btn:hover {
+  background: var(--bg);
+}
+
+@media (max-width: 600px) {
+  .map-container { height: 420px; }
+  .map-info-card { top: 16px; left: 16px; right: 16px; max-width: none; padding: 18px 20px; }
+}
+</style>
+</head>
+<body>
+
+<section id="centre">
+  <div class="map-section">
+    <div class="map-header">
+      <div class="sec-label">Our Centre</div>
+      <h2>Varanasi, Uttar Pradesh.</h2>
+      <p style="font-size:15px;color:var(--ink2);font-weight:300;max-width:480px;line-height:1.75;margin-top:12px">Located near BHU Gate, Lanka. Dedicated computer lab, smart classrooms, and daily doubt sessions — all under one roof.</p>
+    </div>
+    <div class="map-container">
+      <div class="map-info-card">
+        <div class="map-badge">
+          <span class="map-badge-dot"></span>
+          <span>Offline Campus</span>
+        </div>
+        <h3>Preparics Coaching</h3>
+        <p>Lanka, Near BHU Gate<br>Varanasi, UP 221005</p>
+        <div class="map-actions">
+          <a href="https://www.google.com/maps/dir//25.2677,82.9913" target="_blank" class="directions-btn">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+            Directions
+          </a>
+          <a href="https://www.google.com/maps?q=25.2677,82.9913" target="_blank" class="view-larger-btn">
+            View map
+          </a>
+        </div>
+      </div>
+      <iframe
+        class="google-map-iframe"
+        src="https://maps.google.com/maps?q=25.2677,82.9913&hl=en&z=16&output=embed"
+        loading="lazy"
+        allowfullscreen
+        referrerpolicy="no-referrer-when-downgrade"
+        title="Preparics Coaching Varanasi Location"
+      ></iframe>
+    </div>
+  </div>
+</section>
+
+</body>
+</html>

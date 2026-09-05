@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101010">
+  <title>Progress | Preparics</title>
+  <link rel="icon" type="image/png" href="../logo.png">
+  <link rel="shortcut icon" href="../favicon.ico">
+  <link rel="apple-touch-icon" href="../logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root { --ink:#101010; --muted:#6c6c6c; --line:#e6e6e6; --soft:#f7f7f7; --max:1160px; --green:#1a9e4a; }
+    * { box-sizing:border-box; }
+    body { margin:0; color:var(--ink); background:#fff; font-family:'DM Sans',sans-serif; }
+    button { font:inherit; cursor:pointer; }
+
+    /* Nav */
+    .nav { height:70px; border-bottom:1px solid var(--line); }
+    .nav-inner { max-width:var(--max); height:100%; margin:auto; padding:0 32px; display:flex; align-items:center; justify-content:space-between; }
+    .brand { display:flex; align-items:center; gap:10px; text-decoration:none; color:var(--ink); font-weight:600; }
+    .brand img { width:34px; height:34px; border-radius:8px; }
+    .back { padding:9px 14px; border:1px solid var(--line); border-radius:999px; color:var(--ink); text-decoration:none; font-size:14px; }
+
+    /* Layout */
+    main { max-width:var(--max); margin:auto; padding:62px 32px 80px; }
+    .eyebrow { color:var(--muted); font-size:12px; font-weight:600; letter-spacing:.11em; text-transform:uppercase; }
+    h1 { margin:10px 0 6px; font-size:clamp(36px,5vw,58px); font-weight:500; letter-spacing:-.05em; line-height:1; }
+    .sub { margin:0 0 48px; color:var(--muted); font-size:17px; }
+
+    /* Stat cards */
+    .stat-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:20px; margin-bottom:60px; }
+    .stat-card { padding:32px 28px; border:1px solid var(--line); border-radius:14px; }
+    .stat-label { font-size:11px; font-weight:700; color:var(--muted); letter-spacing:.1em; text-transform:uppercase; margin-bottom:16px; }
+    .stat-value { font-size:44px; font-weight:500; letter-spacing:-.05em; line-height:1; margin-bottom:6px; }
+    .stat-value span { font-size:20px; font-weight:400; color:var(--muted); }
+    .stat-sub { font-size:13px; color:var(--muted); margin-bottom:20px; }
+    .stat-bar-wrap { height:3px; background:var(--line); border-radius:99px; overflow:hidden; }
+    .stat-bar { height:100%; background:var(--ink); border-radius:99px; width:0%; transition:width .7s cubic-bezier(.25,.46,.45,.94); }
+
+    /* Section header */
+    .section-head { display:flex; align-items:baseline; justify-content:space-between; margin-bottom:16px; }
+    .section-head h2 { margin:0; font-size:20px; font-weight:500; letter-spacing:-.025em; }
+    .section-head span { font-size:13px; color:var(--muted); }
+
+    /* Session history table */
+    .history-table { width:100%; border-collapse:collapse; }
+    .history-table th { text-align:left; font-size:11px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); padding:0 0 12px; border-bottom:1px solid var(--line); }
+    .history-table th:last-child { text-align:right; }
+    .history-table td { padding:14px 0; border-bottom:1px solid var(--line); font-size:14px; vertical-align:middle; }
+    .history-table td:last-child { text-align:right; }
+    .history-table tr:last-child td { border-bottom:0; }
+    .session-date { font-weight:500; }
+    .session-time { color:var(--muted); font-size:13px; margin-top:2px; }
+    .session-dur { font-weight:500; font-variant-numeric:tabular-nums; }
+    .session-badge { display:inline-block; padding:3px 10px; border-radius:999px; font-size:11px; font-weight:600; background:#f0faf4; color:var(--green); }
+
+    /* Empty state */
+    .empty { padding:56px 0; text-align:center; color:var(--muted); }
+    .empty svg { margin-bottom:14px; opacity:.25; display:block; margin-left:auto; margin-right:auto; }
+    .empty p { margin:0; font-size:15px; }
+    .empty a { color:var(--ink); font-weight:500; }
+
+    /* History container */
+    #historyWrap {
+      width: 100%;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    /* Loading overlay */
+    #loading { position:fixed; inset:0; display:grid; place-items:center; background:#fff; z-index:20; font-size:14px; color:var(--muted); }
+
+    @media(max-width:760px) {
+      .nav-inner, main { padding-left:18px; padding-right:18px; }
+      main { padding-top:40px; }
+      .stat-grid { grid-template-columns:1fr; gap:16px; margin-bottom:40px; }
+      .stat-card { padding:24px 20px; }
+      .stat-value { font-size:36px; }
+    }
+
+    @media(max-width:480px) {
+      .nav { height:58px; }
+      .nav-inner, main { padding-left:14px; padding-right:14px; }
+      .brand { font-size:15px; gap:8px; }
+      .brand img { width:28px; height:28px; }
+      .back { font-size:12px; padding:6px 12px; }
+      h1 { font-size:clamp(28px, 8vw, 42px); }
+      .sub { font-size:15px; margin-bottom:32px; }
+      .stat-card { padding:20px 16px; }
+      .stat-value { font-size:32px; }
+      .history-table th, .history-table td { padding:10px 4px; font-size:13px; }
+      .session-badge { font-size:10px; padding:2px 8px; }
+    }
+  </style>
+</head>
+<body>
+  <div id="loading">Loading your progress…</div>
+
+  <nav class="nav">
+    <div class="nav-inner">
+      <a class="brand" href="exam-portal.html"><img src="../logo.png" alt="Preparics logo">Preparics</a>
+      <a class="back" href="exam-portal.html">← Portal</a>
+    </div>
+  </nav>
+
+  <main>
+    <div class="eyebrow">Your progress</div>
+    <h1>Focus time.</h1>
+    <p class="sub">Track how much time you've spent in deep focus — today, this week, and this month.</p>
+
+    <!-- Stat cards -->
+    <div class="stat-grid">
+      <div class="stat-card">
+        <div class="stat-label">Today</div>
+        <div class="stat-value" id="statToday">—</div>
+        <div class="stat-sub" id="statTodaySub">Loading…</div>
+        <div class="stat-bar-wrap"><div class="stat-bar" id="barToday"></div></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">This week</div>
+        <div class="stat-value" id="statWeek">—</div>
+        <div class="stat-sub" id="statWeekSub">Loading…</div>
+        <div class="stat-bar-wrap"><div class="stat-bar" id="barWeek"></div></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">This month</div>
+        <div class="stat-value" id="statMonth">—</div>
+        <div class="stat-sub" id="statMonthSub">Loading…</div>
+        <div class="stat-bar-wrap"><div class="stat-bar" id="barMonth"></div></div>
+      </div>
+    </div>
+
+    <!-- Session history -->
+    <div class="section-head">
+      <h2>Recent sessions</h2>
+      <span id="sessionCount"></span>
+    </div>
+    <div id="historyWrap">
+      <div class="empty">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+        <p>Loading sessions…</p>
+      </div>
+    </div>
+  </main>
+
+  <script type="module">
+    import { initializeApp }          from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
+    import { getDatabase, ref, onValue }  from "https://www.gstatic.com/firebasejs/12.18.0/firebase-database.js";
+
+    const config = { apiKey:"AIzaSyBL--yNzohCUW5Vg3Yll36ut0r53rFDHyU", authDomain:"preparics-8bbcc.firebaseapp.com", databaseURL:"https://preparics-8bbcc-default-rtdb.firebaseio.com", projectId:"preparics-8bbcc", storageBucket:"preparics-8bbcc.firebasestorage.app", messagingSenderId:"707427796857", appId:"1:707427796857:web:130e73c8867fe5ec8691a8" };
+    const app = initializeApp(config);
+    const db  = getDatabase(app);
+
+    onAuthStateChanged(getAuth(app), user => {
+      if (!user) { window.location.replace('../index.html'); return; }
+      document.getElementById('loading').remove();
+      subscribeProgress(user);
+    });
+
+    // ── Helpers ───────────────────────────────────────────────────────────────
+    function todayKey()   { return new Date().toISOString().slice(0, 10); }
+    function weekStart()  { const d = new Date(); d.setHours(0,0,0,0); d.setDate(d.getDate() - ((d.getDay()+6)%7)); return d.getTime(); }
+    function monthStart() { const d = new Date(); return new Date(d.getFullYear(), d.getMonth(), 1).getTime(); }
+
+    function fmtMins(m) {
+      if (m <= 0) return '0<span>m</span>';
+      const h = Math.floor(m/60), mins = m%60;
+      if (h > 0 && mins > 0) return `${h}<span>h</span> ${mins}<span>m</span>`;
+      if (h > 0) return `${h}<span>h</span>`;
+      return `${mins}<span>m</span>`;
+    }
+    function fmtDur(sec) {
+      const m = Math.round(sec/60), h = Math.floor(m/60), mins = m%60;
+      if (h > 0 && mins > 0) return `${h}h ${mins}m`;
+      if (h > 0) return `${h}h`;
+      return `${mins}m`;
+    }
+    function fmtDate(ts) {
+      const d = new Date(ts);
+      const today = new Date(); today.setHours(0,0,0,0);
+      const yest  = new Date(today); yest.setDate(yest.getDate()-1);
+      if (d >= today) return 'Today';
+      if (d >= yest)  return 'Yesterday';
+      return new Intl.DateTimeFormat(undefined, { dateStyle:'medium' }).format(d);
+    }
+    function fmtTime(ts) {
+      return new Intl.DateTimeFormat(undefined, { timeStyle:'short' }).format(new Date(ts));
+    }
+
+    function setStat(vId, sId, bId, totalMins, count, noun, maxMins) {
+      document.getElementById(vId).innerHTML = fmtMins(totalMins);
+      document.getElementById(sId).textContent = count
+        ? `${count} session${count!==1?'s':''} ${noun}`
+        : `No sessions ${noun}`;
+      setTimeout(() => {
+        document.getElementById(bId).style.width =
+          Math.min(100, (totalMins / maxMins) * 100) + '%';
+      }, 100);
+    }
+
+    // ── Subscribe ─────────────────────────────────────────────────────────────
+    function subscribeProgress(user) {
+      onValue(ref(db, `users/${user.uid}/focusSessions`), snap => {
+        const data = snap.val() || {};
+        const sessions = Object.values(data).sort((a,b) => b.completedAt - a.completedAt);
+
+        const today  = todayKey();
+        const wStart = weekStart(), mStart = monthStart();
+        let dM=0,wM=0,mM=0, dN=0,wN=0,mN=0;
+
+        sessions.forEach(s => {
+          const m  = Math.round((s.durationSeconds||0) / 60);
+          const ts = s.completedAt || 0;
+          if (s.date === today) { dM+=m; dN++; }
+          if (ts >= wStart)     { wM+=m; wN++; }
+          if (ts >= mStart)     { mM+=m; mN++; }
+        });
+
+        setStat('statToday','statTodaySub','barToday', dM, dN, 'today',      120);
+        setStat('statWeek', 'statWeekSub', 'barWeek',  wM, wN, 'this week',  600);
+        setStat('statMonth','statMonthSub','barMonth',  mM, mN, 'this month', 2400);
+
+        renderHistory(sessions);
+      });
+    }
+
+    function renderHistory(sessions) {
+      const wrap = document.getElementById('historyWrap');
+      document.getElementById('sessionCount').textContent =
+        sessions.length ? `${sessions.length} total` : '';
+
+      if (!sessions.length) {
+        wrap.innerHTML = `
+          <div class="empty">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+            <p>No sessions recorded yet. <a href="study-timer.html">Start your first focus session →</a></p>
+          </div>`;
+        return;
+      }
+
+      const rows = sessions.slice(0, 30).map(s => `
+        <tr>
+          <td>
+            <div class="session-date">${fmtDate(s.completedAt)}</div>
+            <div class="session-time">${fmtTime(s.completedAt)}</div>
+          </td>
+          <td class="session-dur">${fmtDur(s.durationSeconds)}</td>
+          <td><span class="session-badge">Completed</span></td>
+        </tr>`).join('');
+
+      wrap.innerHTML = `
+        <table class="history-table">
+          <thead><tr>
+            <th>Session</th>
+            <th>Duration</th>
+            <th>Status</th>
+          </tr></thead>
+          <tbody>${rows}</tbody>
+        </table>`;
+    }
+  </script>
+</body>
+</html>

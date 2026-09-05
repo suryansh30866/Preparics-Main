@@ -1,0 +1,18 @@
+{
+  "rules": {
+    "users": {
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        ".write": "auth != null && auth.uid === $uid"
+      }
+    },
+    "buy course users": {
+      ".read": "auth != null",
+      ".write": "auth != null"
+    },
+    "blogs": {
+      ".read": true,
+      ".write": "auth != null"
+    }
+  }
+}

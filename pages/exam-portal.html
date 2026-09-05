@@ -1,0 +1,2201 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Student Portal | Preparics</title>
+  <link rel="icon" type="image/png" href="../logo.png">
+  <link rel="shortcut icon" href="../favicon.ico">
+  <link rel="apple-touch-icon" href="../logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root { --ink:#101010; --muted:#6c6c6c; --line:#e6e6e6; --soft:#f7f7f7; --max:1160px; }
+    * { box-sizing:border-box; }
+    body { margin:0; color:var(--ink); background:#fff; font-family:'DM Sans',sans-serif; }
+    button { font:inherit; }
+    .nav { height:70px; border-bottom:1px solid var(--line); }
+    .nav-inner { max-width:var(--max); height:100%; margin:auto; padding:0 32px; display:flex; align-items:center; justify-content:space-between; gap:16px; }
+    .brand { display:flex; align-items:center; gap:10px; color:var(--ink); font-size:17px; font-weight:600; text-decoration:none; }
+    .brand img { width:34px; height:34px; border-radius:8px; }
+    .profile-button { display:flex; align-items:center; gap:10px; padding:5px 8px 5px 5px; background:#fff; border:1px solid var(--line); border-radius:999px; cursor:pointer; color:var(--ink); }
+    .profile-button:hover { background:var(--soft); }
+    .avatar { width:34px; height:34px; border-radius:50%; object-fit:cover; background:var(--ink); color:#fff; display:grid; place-items:center; font-size:13px; font-weight:600; }
+    .profile-name { max-width:150px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:14px; font-weight:500; }
+    .profile-menu { position:absolute; top:62px; right:0; width:min(340px, calc(100vw - 32px)); padding:8px; background:#fff; border:1px solid var(--line); border-radius:10px; box-shadow:0 12px 32px rgba(0,0,0,.12); display:none; z-index:10; }
+    .profile-menu.open { display:block; }
+    .profile-summary { padding:14px 14px 12px; border-bottom:1px solid var(--line); }
+    .profile-summary strong { display:block; font-size:15px; font-weight:600; color:var(--ink); letter-spacing:-0.01em; text-transform:capitalize; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .profile-summary .profile-email { display:block; margin-top:2px; color:var(--muted); font-size:13px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .profile-meta-tags { display:none; flex-wrap:wrap; align-items:center; gap:6px 10px; margin-top:10px; padding-top:10px; border-top:1px solid #f0f0f0; }
+    .profile-meta-tag { display:inline-flex; align-items:center; gap:6px; font-size:12px; color:var(--muted); font-weight:400; line-height:1; }
+    .profile-meta-tag svg { color:#737373; flex-shrink:0; }
+    .profile-meta-tag.location-tag span { text-transform:capitalize; }
+    .profile-meta-sep { display:inline-block; width:3px; height:3px; border-radius:50%; background:#d4d4d8; }
+    .login-history { padding:14px 12px 8px; border-bottom:1px solid var(--line); }
+    .login-history-head { display:flex; align-items:baseline; justify-content:space-between; gap:12px; margin-bottom:8px; }
+    .login-history-head strong { font-size:13px; font-weight:600; }
+    .login-history-head span { color:var(--muted); font-size:11px; }
+    .login-item { padding:9px 0; border-top:1px solid #f0f0f0; }
+    .login-item:first-child { border-top:0; }
+    .login-place { display:block; font-size:13px; font-weight:500; }
+    .login-time { display:block; margin-top:2px; color:var(--muted); font-size:12px; }
+    .login-empty { padding:7px 0; color:var(--muted); font-size:12px; }
+    .signout { width:100%; margin-top:6px; padding:11px 12px; background:transparent; border:0; border-radius:6px; text-align:left; cursor:pointer; color:#b42318; }
+    .signout:hover { background:#fff3f2; }
+    .profile-wrap { position:relative; }
+    main { max-width:var(--max); margin:auto; padding:72px 32px; }
+    .eyebrow { color:#777; font-size:12px; font-weight:600; letter-spacing:.1em; text-transform:uppercase; }
+    h1 { max-width:760px; margin:10px 0 12px; font-size:clamp(40px,6vw,70px); line-height:1.03; font-weight:500; letter-spacing:-.05em; }
+    .intro { max-width:590px; margin:0; color:var(--muted); font-size:17px; line-height:1.65; }
+    .actions { display:flex; gap:12px; flex-wrap:wrap; margin:32px 0 0; }
+    .button { padding:13px 20px; border-radius:999px; text-decoration:none; font-size:14px; font-weight:500; }
+    .button.dark { background:var(--ink); color:#fff; }
+    .button.light { border:1px solid var(--line); color:var(--ink); }
+    #loading { position:fixed; inset:0; display:grid; place-items:center; background:#fff; z-index:20; font-size:14px; color:var(--muted); }
+
+    /* ── Hero Section ── */
+    .portal-hero {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 44px;
+      margin-bottom: 64px;
+    }
+    .hero-content {
+      flex: 1;
+      max-width: 620px;
+    }
+    .hero-feature-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+      flex-shrink: 0;
+      background: transparent;
+      padding: 0;
+      border: none;
+      box-shadow: none;
+      width: 320px;
+    }
+    .feature-img-wrap {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      border-radius: 18px;
+      overflow: hidden;
+      background: transparent;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+    }
+    .feature-img-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      border-radius: 18px;
+    }
+    .buy-course-btn {
+      width: 100%;
+      padding: 13px 20px;
+      background: var(--ink);
+      color: #fff;
+      border: 0;
+      border-radius: 999px;
+      font-size: 14px;
+      font-weight: 600;
+      text-align: center;
+      text-decoration: none;
+      letter-spacing: .01em;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: background .15s, transform .1s, box-shadow .15s;
+    }
+    .buy-course-btn:hover {
+      background: #242424;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
+      transform: translateY(-1px);
+    }
+    .buy-course-btn:active {
+      transform: translateY(0);
+    }
+
+    /* ── Course Playlists ── */
+    .playlists-section { margin-top:10px; }
+    .playlists-head { display:flex; align-items:flex-end; justify-content:space-between; gap:16px; margin-bottom:28px; flex-wrap:wrap; }
+    .playlists-head h2 { margin:0; font-size:26px; font-weight:500; letter-spacing:-.03em; }
+    .playlists-head p { margin:4px 0 0; color:var(--muted); font-size:15px; }
+    .yt-channel-link { display:inline-flex; align-items:center; gap:8px; padding:9px 16px; border:1px solid var(--line); border-radius:999px; text-decoration:none; color:var(--ink); font-size:13px; font-weight:500; transition:background .15s, border-color .15s; }
+    .yt-channel-link:hover { background:var(--soft); border-color:#bbb; }
+    .yt-channel-link svg { flex-shrink:0; }
+    .yt-arrow { color:var(--muted); transition:transform .15s; }
+    .yt-channel-link:hover .yt-arrow { transform:translate(2px, -2px); color:var(--ink); }
+
+    .playlist-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(250px, 1fr)); gap:28px 20px; }
+    .playlist-card { text-decoration:none; color:var(--ink); display:flex; flex-direction:column; }
+    
+    .playlist-thumb-wrap { position:relative; padding-top:8px; margin-bottom:12px; }
+    .playlist-thumb-wrap::before { content:''; position:absolute; top:4px; left:6px; right:6px; height:8px; background:#bfbfbf; border-radius:10px 10px 0 0; opacity:.65; transition:transform .2s ease; }
+    .playlist-thumb-wrap::after { content:''; position:absolute; top:0; left:12px; right:12px; height:6px; background:#dfdfdf; border-radius:8px 8px 0 0; opacity:.75; transition:transform .2s ease; }
+    .playlist-card:hover .playlist-thumb-wrap::before { transform:translateY(-2px); }
+    .playlist-card:hover .playlist-thumb-wrap::after { transform:translateY(-3px); }
+
+    .playlist-thumb { position:relative; z-index:1; width:100%; aspect-ratio:16/9; border-radius:10px; overflow:hidden; background:#181818; box-shadow:0 2px 10px rgba(0,0,0,.06); }
+    .playlist-thumb img { width:100%; height:100%; object-fit:cover; display:block; transition:transform .25s ease; }
+    .playlist-card:hover .playlist-thumb img { transform:scale(1.04); }
+
+    .playlist-badge { position:absolute; bottom:8px; right:8px; z-index:2; background:rgba(0,0,0,.78); backdrop-filter:blur(6px); color:#fff; font-size:11px; font-weight:600; padding:3px 8px; border-radius:5px; display:flex; align-items:center; gap:5px; letter-spacing:.02em; }
+    .playlist-badge svg { flex-shrink:0; }
+
+    .playlist-play-hover { position:absolute; inset:0; background:rgba(0,0,0,.25); z-index:2; display:grid; place-items:center; opacity:0; transition:opacity .2s ease; }
+    .playlist-card:hover .playlist-play-hover { opacity:1; }
+    .playlist-play-circle { width:42px; height:42px; border-radius:50%; background:rgba(255,255,255,.95); display:grid; place-items:center; box-shadow:0 4px 14px rgba(0,0,0,.25); transform:scale(.9); transition:transform .2s ease; }
+    .playlist-card:hover .playlist-play-circle { transform:scale(1); }
+
+    .playlist-info { display:flex; flex-direction:column; gap:4px; }
+    .playlist-title { margin:0; font-size:15px; font-weight:600; color:var(--ink); line-height:1.35; letter-spacing:-.01em; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+    .playlist-sub { font-size:13px; color:var(--muted); font-weight:400; display:inline-flex; align-items:center; gap:4px; transition:color .12s; }
+    .playlist-card:hover .playlist-sub { color:var(--ink); }
+
+    /* Video Player Modal */
+    .video-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      display: none;
+      place-items: center;
+      padding: 24px 16px;
+    }
+    .video-modal.open {
+      display: grid;
+    }
+    .video-modal-backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(16, 16, 16, 0.85);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      animation: modalFadeIn .2s ease;
+    }
+    .video-modal-dialog {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 980px;
+      background: #141414;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 24px 64px rgba(0, 0, 0, 0.65);
+      animation: modalScaleUp .25s cubic-bezier(.16, 1, .3, 1);
+    }
+    @keyframes modalFadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes modalScaleUp { from { opacity: 0; transform: scale(.96) translateY(10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+
+    .video-modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 16px 20px;
+      background: #181818;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      color: #fff;
+    }
+    .modal-header-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      overflow: hidden;
+    }
+    .modal-badge {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 8px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 5px;
+      color: #ccc;
+      letter-spacing: .02em;
+      flex-shrink: 0;
+    }
+    .modal-title {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      letter-spacing: -.01em;
+    }
+    .modal-header-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+    .modal-action-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      background: rgba(255, 255, 255, 0.12);
+      color: #fff;
+      text-decoration: none;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 500;
+      transition: background .15s;
+    }
+    .modal-action-btn:hover {
+      background: rgba(255, 255, 255, 0.22);
+    }
+    .modal-close-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 0;
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      display: grid;
+      place-items: center;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background .15s, transform .1s;
+    }
+    .modal-close-btn:hover {
+      background: rgba(255, 255, 255, 0.22);
+      transform: scale(1.06);
+    }
+
+    .video-modal-body {
+      background: #000;
+    }
+    .modal-player-wrap {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+    }
+    .modal-player-wrap iframe {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+
+    /* ── Study Materials Section ────────────────────────────────────────── */
+    .materials-section {
+      margin-top: 56px;
+      padding-top: 48px;
+      border-top: 1px solid var(--line);
+    }
+    .materials-head {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      margin-bottom: 24px;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    .materials-head h2 {
+      font-size: clamp(24px, 2.6vw, 32px);
+      font-weight: 500;
+      letter-spacing: -0.03em;
+      margin: 0 0 6px;
+      color: var(--ink);
+    }
+    .materials-head p {
+      font-size: 14px;
+      color: var(--muted);
+      margin: 0;
+    }
+    .tabs-control-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 28px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--line);
+      flex-wrap: wrap;
+    }
+    .class-segmented {
+      display: inline-flex;
+      background: var(--soft);
+      padding: 4px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+    }
+    .class-tab-btn {
+      padding: 8px 22px;
+      border-radius: 999px;
+      border: 0;
+      background: transparent;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 500;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .class-tab-btn.active {
+      background: var(--ink);
+      color: #fff;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+    }
+    .subject-pills {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 2px;
+    }
+    .subj-pill {
+      padding: 6px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 500;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+    }
+    .subj-pill.active, .subj-pill:hover {
+      border-color: var(--ink);
+      color: var(--ink);
+      background: var(--soft);
+    }
+    .books-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 28px 22px;
+    }
+    .book-card {
+      text-decoration: none;
+      color: var(--ink);
+      display: flex;
+      flex-direction: column;
+      cursor: pointer;
+      transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      outline: none;
+      border-radius: 12px;
+      background: transparent;
+      border: none;
+      text-align: left;
+      padding: 0;
+      font-family: inherit;
+    }
+    .book-card:hover, .book-card:focus-visible {
+      transform: translateY(-4px);
+    }
+    .book-cover-wrap {
+      position: relative;
+      aspect-ratio: 3 / 4;
+      border-radius: 8px 14px 14px 8px;
+      overflow: hidden;
+      box-shadow: -4px 6px 16px rgba(0,0,0,0.12), 0 1px 3px rgba(0,0,0,0.08);
+      margin-bottom: 14px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 20px 18px;
+      color: #fff;
+      transition: box-shadow 0.2s ease;
+      box-sizing: border-box;
+      width: 100%;
+    }
+    .book-card:hover .book-cover-wrap {
+      box-shadow: -6px 12px 24px rgba(0,0,0,0.18), 0 3px 6px rgba(0,0,0,0.1);
+    }
+    .book-cover-wrap::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 14px;
+      bottom: 0;
+      background: linear-gradient(to right, rgba(0,0,0,0.3) 0%, rgba(255,255,255,0.15) 50%, rgba(0,0,0,0.2) 100%);
+      border-right: 1px solid rgba(255,255,255,0.08);
+      z-index: 3;
+    }
+    .theme-physics {
+      background: linear-gradient(145deg, #1e293b 0%, #0f172a 100%);
+    }
+    .theme-chemistry {
+      background: linear-gradient(145deg, #065f46 0%, #022c22 100%);
+    }
+    .theme-biology {
+      background: linear-gradient(145deg, #15803d 0%, #052e16 100%);
+    }
+    .theme-mathematics {
+      background: linear-gradient(145deg, #881337 0%, #4c0519 100%);
+    }
+    .book-badge-top {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.85);
+    }
+    .book-badge-tag {
+      background: rgba(255,255,255,0.16);
+      backdrop-filter: blur(4px);
+      padding: 3px 8px;
+      border-radius: 4px;
+    }
+    .book-main-title {
+      position: relative;
+      z-index: 2;
+      margin: auto 0;
+    }
+    .book-subject-heading {
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+      margin-bottom: 6px;
+      color: #fff;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+    .book-part-sub {
+      font-size: 13px;
+      font-weight: 500;
+      color: rgba(255,255,255,0.85);
+      letter-spacing: 0.02em;
+    }
+    .book-footer-info {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid rgba(255,255,255,0.15);
+      padding-top: 10px;
+      font-size: 11px;
+      color: rgba(255,255,255,0.85);
+      font-weight: 500;
+    }
+    .book-meta-title {
+      font-size: 15px;
+      font-weight: 600;
+      margin: 0 0 4px;
+      color: var(--ink);
+      letter-spacing: -0.01em;
+    }
+    .book-meta-sub {
+      font-size: 13px;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .book-open-text {
+      font-weight: 500;
+      color: var(--ink);
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* ── Chapter List Drawer / Modal ────────────────────────────────────── */
+    .chapter-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 1010;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .chapter-modal.open {
+      display: flex;
+    }
+    .chapter-modal-backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.65);
+      backdrop-filter: blur(5px);
+    }
+    .chapter-modal-dialog {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 680px;
+      max-height: 85vh;
+      background: #ffffff;
+      border-radius: 16px;
+      box-shadow: 0 24px 48px rgba(0,0,0,0.24);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      animation: modalSlideUp 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .chapter-modal-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--line);
+      background: #fff;
+    }
+    .chapter-modal-close-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 1px solid var(--line);
+      background: var(--soft);
+      color: var(--ink);
+      display: grid;
+      place-items: center;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background .15s, color .15s, transform .1s;
+    }
+    .chapter-modal-close-btn:hover {
+      background: var(--ink);
+      color: #fff;
+      transform: scale(1.05);
+    }
+    .chapter-modal-info h3 {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--ink);
+      margin: 0 0 4px;
+      letter-spacing: -0.02em;
+    }
+    .chapter-modal-info p {
+      font-size: 13px;
+      color: var(--muted);
+      margin: 0;
+    }
+    .chapter-search-box {
+      padding: 12px 24px;
+      background: var(--soft);
+      border-bottom: 1px solid var(--line);
+    }
+    .chapter-search-input {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 8px 14px;
+      font-size: 14px;
+      font-family: inherit;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--ink);
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .chapter-search-input:focus {
+      border-color: var(--ink);
+    }
+    .chapter-list-wrap {
+      padding: 12px 16px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      flex: 1;
+    }
+    .chapter-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      border-radius: 10px;
+      background: #fff;
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      gap: 14px;
+    }
+    .chapter-item:hover {
+      background: var(--soft);
+      border-color: var(--line);
+    }
+    .chapter-item-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+    .chapter-num-badge {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--soft);
+      color: var(--ink);
+      font-size: 12px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .chapter-item:hover .chapter-num-badge {
+      background: var(--ink);
+      color: #fff;
+    }
+    .chapter-titles {
+      min-width: 0;
+    }
+    .chapter-name {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--ink);
+      margin: 0 0 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .chapter-file-label {
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .chapter-read-btn {
+      padding: 6px 14px;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--ink);
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.15s ease;
+      flex-shrink: 0;
+    }
+    .chapter-item:hover .chapter-read-btn {
+      background: var(--ink);
+      color: #fff;
+      border-color: var(--ink);
+    }
+
+    /* ── PDF Reader Modal ───────────────────────────────────────────────── */
+    .pdf-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 1020;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      background: rgba(10, 10, 10, 0.88);
+      backdrop-filter: blur(8px);
+    }
+    .pdf-modal.open {
+      display: flex;
+    }
+    .pdf-modal-container {
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background: #18181b;
+      overflow: hidden;
+    }
+    .pdf-modal-topbar {
+      height: 56px;
+      background: #111113;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      color: #fff;
+      gap: 16px;
+      flex-shrink: 0;
+    }
+    .pdf-topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      min-width: 0;
+    }
+    .pdf-back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      font-weight: 500;
+      color: rgba(255,255,255,0.8);
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.12);
+      padding: 6px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      font-family: inherit;
+    }
+    .pdf-back-btn:hover {
+      background: rgba(255,255,255,0.15);
+      color: #fff;
+    }
+    .pdf-title-info {
+      min-width: 0;
+    }
+    .pdf-doc-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #fff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin: 0;
+    }
+    .pdf-doc-sub {
+      font-size: 11px;
+      color: rgba(255,255,255,0.55);
+      margin: 0;
+    }
+    .pdf-topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+    .pdf-chapter-select {
+      background: rgba(255,255,255,0.08);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.14);
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-family: inherit;
+      outline: none;
+      cursor: pointer;
+      max-width: 240px;
+    }
+    .pdf-chapter-select option {
+      background: #18181b;
+      color: #fff;
+    }
+    .pdf-action-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      font-weight: 500;
+      color: rgba(255,255,255,0.8);
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.12);
+      padding: 6px 14px;
+      border-radius: 8px;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      font-family: inherit;
+    }
+    .pdf-action-btn:hover {
+      background: rgba(255,255,255,0.15);
+      color: #fff;
+    }
+    .pdf-close-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      border: 0;
+      background: rgba(255,255,255,0.08);
+      color: #fff;
+      font-size: 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s ease;
+    }
+    .pdf-close-btn:hover {
+      background: rgba(239, 68, 68, 0.85);
+    }
+    .pdf-frame-wrap {
+      flex: 1;
+      width: 100%;
+      height: calc(100vh - 56px);
+      background: #27272a;
+      position: relative;
+    }
+    .pdf-frame {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      display: block;
+      background: #27272a;
+    }
+
+    /* ── Onboarding Modal ───────────────────────────────────────────────── */
+    .onboarding-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 2000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .onboarding-modal.open {
+      display: flex;
+    }
+    .onboarding-backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.72);
+      backdrop-filter: blur(8px);
+    }
+    .onboarding-card {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      max-width: 440px;
+      max-height: 92vh;
+      overflow-y: auto;
+      background: #ffffff;
+      border-radius: 20px;
+      padding: 36px 32px;
+      box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.25);
+      border: 1px solid rgba(0, 0, 0, 0.06);
+      animation: modalSlideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      box-sizing: border-box;
+    }
+    .onboarding-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 12px;
+      background: var(--soft);
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--muted);
+      margin-bottom: 16px;
+      border: 1px solid var(--line);
+    }
+    .onboarding-heading {
+      font-size: 24px;
+      font-weight: 600;
+      color: var(--ink);
+      margin: 0 0 6px;
+      letter-spacing: -0.02em;
+    }
+    .onboarding-desc {
+      font-size: 14px;
+      color: var(--muted);
+      margin: 0 0 22px;
+      line-height: 1.45;
+    }
+    .onboarding-form {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      text-align: left;
+    }
+    .form-label {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--ink);
+    }
+    .form-input {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 11px 14px;
+      font-size: 14px;
+      font-family: inherit;
+      border: 1.5px solid var(--line);
+      border-radius: 10px;
+      background: #fff;
+      color: var(--ink);
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .form-input:focus {
+      border-color: var(--ink);
+      box-shadow: 0 0 0 3px rgba(16, 16, 16, 0.08);
+    }
+    .form-hint {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+    .onboarding-error {
+      padding: 10px 14px;
+      border-radius: 8px;
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      color: #dc2626;
+      font-size: 13px;
+      line-height: 1.4;
+    }
+    .onboarding-submit-btn {
+      margin-top: 6px;
+      width: 100%;
+      padding: 13px;
+      border-radius: 999px;
+      border: none;
+      background: var(--ink);
+      color: #fff;
+      font-size: 14px;
+      font-weight: 500;
+      font-family: inherit;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: opacity 0.15s, transform 0.1s;
+    }
+    .onboarding-submit-btn:hover {
+      opacity: 0.9;
+      transform: translateY(-1px);
+    }
+    .onboarding-submit-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+    .edit-profile-link {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+      text-align: left;
+      background: none;
+      border: none;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      padding: 10px 16px;
+      font-size: 13px;
+      color: var(--ink);
+      cursor: pointer;
+      font-family: inherit;
+      transition: background 0.15s;
+    }
+    .edit-profile-link:hover {
+      background: var(--soft);
+    }
+
+    @media(max-width:920px) {
+      .portal-hero { flex-direction:column; align-items:flex-start; gap:36px; }
+      .hero-feature-card { align-self:center; }
+    }
+
+    @media(max-width:700px) {
+      .nav-inner,main { padding-left:16px; padding-right:16px; }
+      .profile-name { display:none; }
+      main { padding-top:40px; padding-bottom:48px; }
+      .intro { font-size:16px; }
+      .actions { margin-bottom:0; }
+      .playlists-head { flex-direction:column; align-items:flex-start; gap:12px; }
+      .playlist-grid { grid-template-columns:1fr; gap:16px; }
+      .video-modal { padding: 10px; }
+      .video-modal-dialog { border-radius: 12px; }
+      .hero-feature-card { width:100%; max-width:345px; }
+      .tabs-control-bar { flex-direction: column; align-items: stretch; }
+      .class-segmented { width: 100%; justify-content: center; }
+      .class-tab-btn { flex: 1; text-align: center; }
+      .books-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 16px 12px; }
+      .chapter-modal-dialog { max-height: 94vh; border-radius: 14px; }
+      .pdf-topbar-left .pdf-doc-sub { display: none; }
+      .pdf-chapter-select { max-width: 130px; font-size: 12px; }
+      .pdf-action-btn span:not(.icon) { display: none; }
+      .onboarding-card { padding: 24px 18px; border-radius: 16px; }
+      .onboarding-heading { font-size: 21px; }
+    }
+
+    @media(max-width:480px) {
+      .nav { height: 58px; }
+      .nav-inner, main { padding-left: 12px; padding-right: 12px; }
+      .brand { font-size: 15px; gap: 8px; }
+      .brand img { width: 28px; height: 28px; }
+      .portal-hero { margin-bottom: 40px; }
+      h1 { font-size: clamp(30px, 8vw, 44px); }
+      .blogs-section { margin-top: 36px; }
+      .blogs-grid { grid-template-columns: 1fr; gap: 16px; }
+      .blog-modal { padding: 10px; }
+      .blog-modal-dialog { border-radius: 16px; }
+      .blog-modal-body { padding: 20px 16px; }
+      .blog-modal-banner { height: 180px; margin-bottom: 16px; }
+      .blog-modal-title { font-size: 20px; }
+      .pdf-topbar { height: 50px; padding: 0 10px; gap: 6px; }
+      .pdf-chapter-select { max-width: 110px; font-size: 11px; padding: 4px 6px; }
+      .pdf-doc-title { max-width: 100px; font-size: 12px; }
+      .pdf-action-btn { padding: 5px 8px; }
+      .onboarding-card { padding: 20px 14px; border-radius: 14px; }
+      .onboarding-heading { font-size: 19px; }
+    }
+  
+    /* ── Blogs & Insights Section ── */
+    .blogs-section { margin-top: 48px; }
+    .blogs-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; margin-bottom: 24px; flex-wrap: wrap; }
+    .blogs-head h2 { margin: 0; font-size: 26px; font-weight: 500; letter-spacing: -.03em; }
+    .blogs-head p { margin: 4px 0 0; color: var(--muted); font-size: 15px; }
+    .blog-filter-pills { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; }
+    .blog-pill-btn { padding: 7px 16px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); color: var(--muted); font-family: var(--font); font-size: 13px; font-weight: 500; cursor: pointer; white-space: nowrap; transition: all .15s ease; }
+    .blog-pill-btn:hover { color: var(--ink); border-color: #bbb; }
+    .blog-pill-btn.active { background: var(--ink); color: #fff; border-color: var(--ink); }
+    .blogs-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr)); gap: 24px; }
+    .blog-card { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; overflow: hidden; display: flex; flex-direction: column; cursor: pointer; text-decoration: none; color: var(--ink); transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease; position: relative; }
+    .blog-card:hover { transform: translateY(-3px); box-shadow: 0 12px 28px rgba(0,0,0,.06); border-color: #d1d5db; }
+    .blog-thumb-wrap { width: 100%; aspect-ratio: 16/9; background: #f1f3f5; overflow: hidden; position: relative; }
+    .blog-thumb-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .3s ease; }
+    .blog-card:hover .blog-thumb-wrap img { transform: scale(1.04); }
+    .blog-category-badge { position: absolute; top: 12px; left: 12px; background: rgba(13,13,13,.78); backdrop-filter: blur(8px); color: #fff; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; padding: 4px 10px; border-radius: 999px; }
+    .blog-card-body { padding: 20px; display: flex; flex-direction: column; flex: 1; }
+    .blog-meta-row { display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: var(--muted); margin-bottom: 8px; }
+    .blog-card-title { font-size: 17px; font-weight: 600; line-height: 1.35; letter-spacing: -.015em; color: var(--ink); margin-bottom: 8px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .blog-card-excerpt { font-size: 13.5px; color: var(--muted); line-height: 1.55; margin-bottom: 16px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; flex: 1; }
+    .blog-card-footer { display: flex; align-items: center; justify-content: space-between; border-top: 1px solid var(--line); padding-top: 12px; margin-top: auto; font-size: 13px; }
+    .blog-author-tag { font-weight: 500; color: var(--ink); display: flex; align-items: center; gap: 6px; }
+    .blog-read-link { color: var(--ink); font-weight: 600; display: inline-flex; align-items: center; gap: 4px; transition: transform .15s ease; }
+    .blog-card:hover .blog-read-link { transform: translateX(3px); }
+
+    /* Blog Reader Modal */
+    .blog-modal { position: fixed; inset: 0; z-index: 10002; display: none; place-items: center; padding: 20px 16px; }
+    .blog-modal.open { display: grid; }
+    .blog-modal-backdrop { position: absolute; inset: 0; background: rgba(0,0,0,.65); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); animation: modalFadeIn .2s ease; }
+    .blog-modal-dialog { position: relative; z-index: 1; width: 100%; max-width: 760px; max-height: 88vh; background: #ffffff; border-radius: 20px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 25px 60px rgba(0,0,0,.25); animation: modalSlideUp .25s var(--ease); }
+    .blog-modal-top { display: flex; align-items: center; justify-content: space-between; padding: 16px 24px; border-bottom: 1px solid var(--line); background: #ffffff; }
+    .blog-modal-close { width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--line); background: #f8f9fa; color: var(--ink); display: grid; place-items: center; font-size: 16px; cursor: pointer; transition: background .15s; }
+    .blog-modal-close:hover { background: #e9ecef; }
+    .blog-modal-body { padding: 32px 36px; overflow-y: auto; line-height: 1.75; color: var(--ink); }
+    .blog-modal-banner { width: 100%; height: 280px; object-fit: cover; border-radius: 12px; margin-bottom: 24px; }
+    .blog-modal-title { font-size: 26px; font-weight: 600; letter-spacing: -.025em; line-height: 1.3; margin-bottom: 14px; color: #0d0d0d; }
+    .blog-modal-meta { display: flex; align-items: center; gap: 12px; font-size: 13.5px; color: var(--muted); margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+    .blog-modal-content h3 { font-size: 18px; font-weight: 600; margin: 24px 0 10px; color: #0d0d0d; }
+    .blog-modal-content p { margin-bottom: 16px; font-size: 15px; color: #333333; }
+    .blog-modal-content ul { margin-bottom: 18px; padding-left: 20px; }
+    .blog-modal-content li { margin-bottom: 8px; font-size: 15px; color: #333333; }
+
+  </style>
+</head>
+<body>
+  <div id="loading">Loading your portal…</div>
+  <nav class="nav">
+    <div class="nav-inner">
+      <a class="brand" href="../index.html"><img src="../logo.png" alt="Preparics logo">Preparics</a>
+      <div class="profile-wrap">
+        <button id="profileButton" class="profile-button" type="button" aria-expanded="false" aria-controls="profileMenu">
+          <span id="avatar" class="avatar" aria-hidden="true">U</span><span id="profileName" class="profile-name">Profile</span>
+        </button>
+        <div id="profileMenu" class="profile-menu" role="menu">
+          <div class="profile-summary">
+            <strong id="menuName">Student</strong>
+            <span id="menuEmail" class="profile-email">Loading…</span>
+            <div id="menuMeta" class="profile-meta-tags"></div>
+          </div>
+          <button id="editProfileBtn" class="edit-profile-link" type="button" role="menuitem">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+            <span>Edit profile details</span>
+          </button>
+          <div class="login-history">
+            <div class="login-history-head"><strong>Recent sign-ins</strong></div>
+            <div id="loginHistory" class="login-empty">Loading sign-in history…</div>
+          </div>
+          <button id="signOutButton" class="signout" type="button" role="menuitem">Sign out</button>
+        </div>
+      </div>
+    </div>
+  </nav>
+  <main>
+    <div class="portal-hero">
+      <div class="hero-content">
+        <div class="eyebrow">Student portal</div>
+        <h1 id="greeting">Welcome back.</h1>
+        <p class="intro">Pick up where you left off. Practise with purpose, review your progress, and make today’s study session count.</p>
+        <div class="actions"><a class="button dark" href="study-timer.html">Study timer</a><a class="button light" href="progress.html">View progress</a></div>
+      </div>
+      <div class="hero-feature-card">
+        <div class="feature-img-wrap">
+          <img src="../brain.gif" alt="Preparics Course Feature" loading="lazy">
+        </div>
+        <a class="buy-course-btn" href="buy-course.html" id="buyCourseBtn">
+          <span>Buy course</span>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+        </a>
+      </div>
+    </div>
+
+    <section class="playlists-section">
+      <div class="playlists-head">
+        <div>
+          <h2>Course playlists</h2>
+          <p>Structured video lectures and full chapters by Nilanshu Sir</p>
+        </div>
+        <a class="yt-channel-link" href="course-player.html">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-8 12.5v-9l6 4.5-6 4.5z"/></svg>
+          <span>Course library</span>
+          <span class="yt-arrow">→</span>
+        </a>
+      </div>
+
+      <div class="playlist-grid">
+        <!-- 1. Principle of inheritance (Course) -->
+        <a class="playlist-card" href="course-player.html?list=PLKImUZc_svGQ" data-video="0_SDDtXOBr4" data-list="PLKImUZc_svGQ" data-title="Principle of inheritance" data-type="Course">
+          <div class="playlist-thumb-wrap">
+            <div class="playlist-thumb">
+              <img src="https://i.ytimg.com/vi/0_SDDtXOBr4/hqdefault.jpg" alt="Principle of inheritance" loading="lazy">
+              <div class="playlist-badge">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3 1 9l11 6 9-4.91V17h2V9L12 3zm0 13.5L4 12.14v4.36l8 4.36 8-4.36V12.14l-8 4.36z"/></svg>
+                <span>5 lessons</span>
+              </div>
+              <div class="playlist-play-hover"><div class="playlist-play-circle"><svg width="18" height="18" viewBox="0 0 24 24" fill="#101010"><path d="M8 5v14l11-7z"/></svg></div></div>
+            </div>
+          </div>
+          <div class="playlist-info">
+            <h3 class="playlist-title">Principle of inheritance</h3>
+            <span class="playlist-sub">Play course ▶</span>
+          </div>
+        </a>
+
+        <!-- 2. Principle of Inheritance (Playlist) -->
+        <a class="playlist-card" href="course-player.html?list=PLVmM-TYuAoJ8" data-video="0_SDDtXOBr4" data-list="PLVmM-TYuAoJ8" data-title="Principle of Inheritance" data-type="Playlist">
+          <div class="playlist-thumb-wrap">
+            <div class="playlist-thumb">
+              <img src="https://i.ytimg.com/vi/0_SDDtXOBr4/hqdefault.jpg" alt="Principle of Inheritance" loading="lazy">
+              <div class="playlist-badge">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M19 9H2v2h17V9zm0-4H2v2h17V5zM2 15h11v-2H2v2zm13-2v6l5-3-5-3z"/></svg>
+                <span>5 videos</span>
+              </div>
+              <div class="playlist-play-hover"><div class="playlist-play-circle"><svg width="18" height="18" viewBox="0 0 24 24" fill="#101010"><path d="M8 5v14l11-7z"/></svg></div></div>
+            </div>
+          </div>
+          <div class="playlist-info">
+            <h3 class="playlist-title">Principle of Inheritance</h3>
+            <span class="playlist-sub">Play playlist ▶</span>
+          </div>
+        </a>
+
+        <!-- 3. Class 11 Botany -->
+        <a class="playlist-card" href="course-player.html?list=PLeX823ZN94pEZ0C5V0sKix89J9KL4BrJM" data-video="zvYEWBlB3Hc" data-list="PLeX823ZN94pEZ0C5V0sKix89J9KL4BrJM" data-title="Class 11 Botany" data-type="Course">
+          <div class="playlist-thumb-wrap">
+            <div class="playlist-thumb">
+              <img src="https://i.ytimg.com/vi/zvYEWBlB3Hc/hqdefault.jpg" alt="Class 11 Botany" loading="lazy">
+              <div class="playlist-badge">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3 1 9l11 6 9-4.91V17h2V9L12 3zm0 13.5L4 12.14v4.36l8 4.36 8-4.36V12.14l-8 4.36z"/></svg>
+                <span>1 lesson</span>
+              </div>
+              <div class="playlist-play-hover"><div class="playlist-play-circle"><svg width="18" height="18" viewBox="0 0 24 24" fill="#101010"><path d="M8 5v14l11-7z"/></svg></div></div>
+            </div>
+          </div>
+          <div class="playlist-info">
+            <h3 class="playlist-title">Class 11 Botany</h3>
+            <span class="playlist-sub">Play course ▶</span>
+          </div>
+        </a>
+
+        <!-- 4. Plantation crop Tea -->
+        <a class="playlist-card" href="course-player.html?list=PLeX823ZN94pHJt4FGpm6r1UJQd6PqMuP-" data-video="ycq1Zo_yGc4" data-list="PLeX823ZN94pHJt4FGpm6r1UJQd6PqMuP-" data-title="Plantation crop Tea" data-type="Playlist">
+          <div class="playlist-thumb-wrap">
+            <div class="playlist-thumb">
+              <img src="https://i.ytimg.com/vi/ycq1Zo_yGc4/hqdefault.jpg" alt="Plantation crop Tea" loading="lazy">
+              <div class="playlist-badge">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M19 9H2v2h17V9zm0-4H2v2h17V5zM2 15h11v-2H2v2zm13-2v6l5-3-5-3z"/></svg>
+                <span>3 videos</span>
+              </div>
+              <div class="playlist-play-hover"><div class="playlist-play-circle"><svg width="18" height="18" viewBox="0 0 24 24" fill="#101010"><path d="M8 5v14l11-7z"/></svg></div></div>
+            </div>
+          </div>
+          <div class="playlist-info">
+            <h3 class="playlist-title">Plantation crop Tea</h3>
+            <span class="playlist-sub">Play playlist ▶</span>
+          </div>
+        </a>
+
+        <!-- 5. Cell Biology -->
+        <a class="playlist-card" href="course-player.html?list=PLG0_Iemy2ofc" data-video="76hjoGbt-xU" data-list="PLG0_Iemy2ofc" data-title="Cell Biology" data-type="Course">
+          <div class="playlist-thumb-wrap">
+            <div class="playlist-thumb">
+              <img src="https://i.ytimg.com/vi/76hjoGbt-xU/hqdefault.jpg" alt="Cell Biology" loading="lazy">
+              <div class="playlist-badge">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3 1 9l11 6 9-4.91V17h2V9L12 3zm0 13.5L4 12.14v4.36l8 4.36 8-4.36V12.14l-8 4.36z"/></svg>
+                <span>4 lessons</span>
+              </div>
+              <div class="playlist-play-hover"><div class="playlist-play-circle"><svg width="18" height="18" viewBox="0 0 24 24" fill="#101010"><path d="M8 5v14l11-7z"/></svg></div></div>
+            </div>
+          </div>
+          <div class="playlist-info">
+            <h3 class="playlist-title">Cell Biology</h3>
+            <span class="playlist-sub">Play course ▶</span>
+          </div>
+        </a>
+
+        <!-- 6. Dairy technology from basics -->
+        <a class="playlist-card" href="course-player.html?list=PLeX823ZN94pGsc2env3Mble5sMmjF-fih" data-video="6t9VWn-DeMQ" data-list="PLeX823ZN94pGsc2env3Mble5sMmjF-fih" data-title="Dairy technology from basics" data-type="Playlist">
+          <div class="playlist-thumb-wrap">
+            <div class="playlist-thumb">
+              <img src="https://i.ytimg.com/vi/6t9VWn-DeMQ/hqdefault.jpg" alt="Dairy technology from basics" loading="lazy">
+              <div class="playlist-badge">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M19 9H2v2h17V9zm0-4H2v2h17V5zM2 15h11v-2H2v2zm13-2v6l5-3-5-3z"/></svg>
+                <span>11 videos</span>
+              </div>
+              <div class="playlist-play-hover"><div class="playlist-play-circle"><svg width="18" height="18" viewBox="0 0 24 24" fill="#101010"><path d="M8 5v14l11-7z"/></svg></div></div>
+            </div>
+          </div>
+          <div class="playlist-info">
+            <h3 class="playlist-title">Dairy technology from basics</h3>
+            <span class="playlist-sub">Play playlist ▶</span>
+          </div>
+        </a>
+
+        <!-- 7. Body fluids and circulation -->
+        <a class="playlist-card" href="course-player.html?list=PLeX823ZN94pEZDHfy4fxbzc4MfDUgwt-K" data-video="z5JS6yLoKcE" data-list="PLeX823ZN94pEZDHfy4fxbzc4MfDUgwt-K" data-title="Body fluids and circulation" data-type="Playlist">
+          <div class="playlist-thumb-wrap">
+            <div class="playlist-thumb">
+              <img src="https://i.ytimg.com/vi/z5JS6yLoKcE/hqdefault.jpg" alt="Body fluids and circulation" loading="lazy">
+              <div class="playlist-badge">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M19 9H2v2h17V9zm0-4H2v2h17V5zM2 15h11v-2H2v2zm13-2v6l5-3-5-3z"/></svg>
+                <span>6 videos</span>
+              </div>
+              <div class="playlist-play-hover"><div class="playlist-play-circle"><svg width="18" height="18" viewBox="0 0 24 24" fill="#101010"><path d="M8 5v14l11-7z"/></svg></div></div>
+            </div>
+          </div>
+          <div class="playlist-info">
+            <h3 class="playlist-title">Body fluids and circulation</h3>
+            <span class="playlist-sub">Play playlist ▶</span>
+          </div>
+        </a>
+      </div>
+    </section>
+
+    <!-- ── Blogs & Articles Section (Below Course Playlists) ── -->
+    <section class="blogs-section" id="blogsSection">
+      <div class="blogs-head">
+        <div>
+          <h2>Latest articles &amp; blogs</h2>
+          <p>Study strategies, masterclass notes, and exam insights published by faculty</p>
+        </div>
+        <div class="blog-filter-pills" id="blogFilterPills">
+          <button class="blog-pill-btn active" data-category="all" type="button">All articles</button>
+          <button class="blog-pill-btn" data-category="NEET Strategy" type="button">NEET Strategy</button>
+          <button class="blog-pill-btn" data-category="Biology Notes" type="button">Biology Notes</button>
+          <button class="blog-pill-btn" data-category="Study Tips" type="button">Study Tips</button>
+        </div>
+      </div>
+
+      <div class="blogs-grid" id="blogsGrid">
+        <!-- Loaded dynamically from Firebase / API -->
+      </div>
+    </section>
+
+
+    <!-- ── Study Materials Section ── -->
+    <section class="materials-section" id="studyMaterials">
+      <div class="materials-head">
+        <div>
+          <h2>Study materials</h2>
+          <p>Official NCERT textbooks and chapter-wise study notes for JEE & NEET</p>
+        </div>
+      </div>
+
+      <div class="tabs-control-bar">
+        <div class="class-segmented" id="classTabs">
+          <button class="class-tab-btn active" data-class="11" type="button">Class 11th</button>
+          <button class="class-tab-btn" data-class="12" type="button">Class 12th</button>
+        </div>
+        <div class="subject-pills" id="subjectPills">
+          <button class="subj-pill active" data-subject="all" type="button">All subjects</button>
+          <button class="subj-pill" data-subject="Physics" type="button">Physics</button>
+          <button class="subj-pill" data-subject="Chemistry" type="button">Chemistry</button>
+          <button class="subj-pill" data-subject="Biology" type="button">Biology</button>
+          <button class="subj-pill" data-subject="Mathematics" type="button">Mathematics</button>
+        </div>
+      </div>
+
+      <div class="books-grid" id="booksGrid">
+        <!-- Rendered dynamically -->
+      </div>
+    </section>
+  </main>
+
+  <!-- In-Portal Video Player Modal -->
+  <div id="videoModal" class="video-modal" aria-hidden="true">
+    <div class="video-modal-backdrop" id="modalBackdrop"></div>
+    <div class="video-modal-dialog">
+      <div class="video-modal-header">
+        <div class="modal-header-left">
+          <span class="modal-badge" id="modalBadge">Course</span>
+          <h3 class="modal-title" id="modalTitle">Course Title</h3>
+        </div>
+        <div class="modal-header-actions">
+          <a id="modalFullPageBtn" class="modal-action-btn" href="course-player.html" title="Open dedicated player">
+            <span>Full player</span>
+            <span>↗</span>
+          </a>
+          <button id="modalCloseBtn" class="modal-close-btn" type="button" aria-label="Close player">✕</button>
+        </div>
+      </div>
+      <div class="video-modal-body">
+        <div class="modal-player-wrap">
+          <iframe id="modalIframe" src="" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chapter Drawer Modal -->
+  <div id="chapterModal" class="chapter-modal" aria-hidden="true">
+    <div class="chapter-modal-backdrop" id="chapterModalBackdrop"></div>
+    <div class="chapter-modal-dialog">
+      <div class="chapter-modal-head">
+        <div class="chapter-modal-info">
+          <h3 id="chapterModalBookTitle">Book Title</h3>
+          <p id="chapterModalBookSub">Class · Subject · 0 Chapters</p>
+        </div>
+        <button id="chapterModalCloseBtn" class="chapter-modal-close-btn" type="button" aria-label="Close chapter list">✕</button>
+      </div>
+      <div class="chapter-search-box">
+        <input type="text" id="chapterSearchInput" class="chapter-search-input" placeholder="Search chapters by name or number..." autocomplete="off">
+      </div>
+      <div class="chapter-list-wrap" id="chapterListWrap">
+        <!-- Rendered dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <!-- In-Portal Minimalistic Fullscreen PDF Reader Modal -->
+  <div id="pdfModal" class="pdf-modal" aria-hidden="true">
+    <div class="pdf-modal-container">
+      <div class="pdf-modal-topbar">
+        <div class="pdf-topbar-left">
+          <button id="pdfBackBtn" class="pdf-back-btn" type="button" title="Back to chapter list">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+            <span>Chapters</span>
+          </button>
+          <div class="pdf-title-info">
+            <h4 class="pdf-doc-title" id="pdfDocTitle">Chapter Title</h4>
+            <p class="pdf-doc-sub" id="pdfDocSub">Book Name</p>
+          </div>
+        </div>
+        <div class="pdf-topbar-right">
+          <select id="pdfChapterSelect" class="pdf-chapter-select" aria-label="Select chapter">
+            <!-- Populated dynamically -->
+          </select>
+          <a id="pdfDownloadBtn" class="pdf-action-btn" href="" download title="Download PDF">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+            <span class="icon">Download</span>
+          </a>
+          <a id="pdfExternalBtn" class="pdf-action-btn" href="" target="_blank" rel="noopener noreferrer" title="Open PDF in new tab">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3"/></svg>
+            <span>Open in Tab</span>
+          </a>
+          <button id="pdfCloseBtn" class="pdf-close-btn" type="button" aria-label="Close reader">✕</button>
+        </div>
+      </div>
+      <div class="pdf-frame-wrap">
+        <iframe id="pdfFrame" class="pdf-frame" src="" title="PDF Document Viewer"></iframe>
+      </div>
+    </div>
+  </div>
+
+  <!-- First-Time User Profile Setup Modal -->
+  <div id="onboardingModal" class="onboarding-modal" aria-hidden="true" role="dialog" aria-labelledby="onboardingTitle">
+    <div class="onboarding-backdrop" id="onboardingBackdrop"></div>
+    <div class="onboarding-card">
+      <div class="onboarding-badge">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <span>Student Profile</span>
+      </div>
+      <h2 id="onboardingTitle" class="onboarding-heading">Welcome to Preparics</h2>
+      <p class="onboarding-desc">Please enter your name, phone number, and city to finish setting up your student profile.</p>
+
+      <form id="onboardingForm" class="onboarding-form" novalidate>
+        <div class="form-group">
+          <label for="onboardingName" class="form-label">Full Name</label>
+          <input type="text" id="onboardingName" class="form-input" placeholder="e.g. Harry Potter" required autocomplete="name">
+        </div>
+
+        <div class="form-group">
+          <label for="onboardingPhone" class="form-label">Phone Number</label>
+          <input type="tel" id="onboardingPhone" class="form-input" placeholder="e.g. 9876543210" required autocomplete="tel">
+          <span class="form-hint">Required for course updates, mentors, and exam notifications</span>
+        </div>
+
+        <div class="form-group">
+          <label for="onboardingCity" class="form-label">City</label>
+          <input type="text" id="onboardingCity" class="form-input" placeholder="e.g. Varanasi, Lucknow" required autocomplete="address-level2">
+        </div>
+
+        <div id="onboardingError" class="onboarding-error" hidden></div>
+
+        <button type="submit" id="onboardingSubmitBtn" class="onboarding-submit-btn">
+          <span>Save &amp; Continue</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
+    import { getDatabase, ref, set, update, get, onValue, query, orderByKey, limitToLast } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-database.js";
+    import { STUDY_MATERIALS } from "./study_materials_data.js";
+
+    const firebaseConfig = { apiKey:"AIzaSyBL--yNzohCUW5Vg3Yll36ut0r53rFDHyU", authDomain:"preparics-8bbcc.firebaseapp.com", databaseURL:"https://preparics-8bbcc-default-rtdb.firebaseio.com", projectId:"preparics-8bbcc", storageBucket:"preparics-8bbcc.firebasestorage.app", messagingSenderId:"707427796857", appId:"1:707427796857:web:130e73c8867fe5ec8691a8", measurementId:"G-SL3D0G49S3" };
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const database = getDatabase(app);
+    const profileButton = document.getElementById('profileButton');
+    const profileMenu = document.getElementById('profileMenu');
+
+    let currentProfileData = null;
+
+    function greetingForHour(hour) {
+      if (hour >= 5 && hour < 12) return 'Good morning';
+      if (hour >= 12 && hour < 17) return 'Good afternoon';
+      if (hour >= 17 && hour < 21) return 'Good evening';
+      return 'Good night';
+    }
+    function initials(name) { return name.split(/\s+/).map(word => word[0]).slice(0,2).join('').toUpperCase(); }
+    
+    function setProfile(user, profileData = {}) {
+      currentProfileData = profileData;
+      const name = profileData.name || user.displayName || 'Student';
+      const firstName = name.split(/\s+/)[0];
+      document.getElementById('greeting').textContent = `${greetingForHour(new Date().getHours())}, ${firstName}.`;
+      document.getElementById('profileName').textContent = name;
+      document.getElementById('menuName').textContent = name;
+      document.getElementById('menuEmail').textContent = user.email || '';
+
+      const menuMeta = document.getElementById('menuMeta');
+      if (menuMeta) {
+        menuMeta.innerHTML = '';
+        const tags = [];
+        if (profileData.city) {
+          tags.push(`
+            <span class="profile-meta-tag location-tag" title="City">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+              <span>${profileData.city}</span>
+            </span>
+          `);
+        }
+        if (profileData.phone || profileData.phoneNo) {
+          const rawPhone = profileData.phone || profileData.phoneNo;
+          tags.push(`
+            <span class="profile-meta-tag phone-tag" title="Phone">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+              <span>${rawPhone}</span>
+            </span>
+          `);
+        }
+        if (tags.length > 0) {
+          menuMeta.innerHTML = tags.join('<span class="profile-meta-sep" aria-hidden="true"></span>');
+          menuMeta.style.display = 'flex';
+        } else {
+          menuMeta.style.display = 'none';
+        }
+      }
+
+      const editBtn = document.getElementById('editProfileBtn');
+      if (editBtn) editBtn.style.display = 'flex';
+
+      const avatar = document.getElementById('avatar');
+      if (user.photoURL) {
+        avatar.textContent = '';
+        avatar.style.backgroundImage = `url("${user.photoURL}")`;
+        avatar.style.backgroundSize = 'cover';
+      } else {
+        avatar.textContent = initials(name);
+      }
+    }
+
+    function formatLoginTime(timestamp) {
+      return new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(Number(timestamp)));
+    }
+    function cleanPlace(place) {
+      const uniqueParts = String(place || '').split(',').map(part => part.trim()).filter((part, index, parts) => part && parts.findIndex(value => value.toLocaleLowerCase() === part.toLocaleLowerCase()) === index);
+      return uniqueParts.join(', ') || 'Location unavailable';
+    }
+    function deviceSummary() {
+      const agent = navigator.userAgent;
+      const browser = /Edg\//.test(agent) ? 'Microsoft Edge' : /Chrome\//.test(agent) ? 'Google Chrome' : /Firefox\//.test(agent) ? 'Firefox' : /Safari\//.test(agent) ? 'Safari' : 'Unknown browser';
+      const type = /Mobi|Android|iPhone|iPad/i.test(agent) ? 'Mobile device' : 'Desktop device';
+      const platform = navigator.userAgentData?.platform || navigator.platform || type;
+      return `${browser} on ${platform}`;
+    }
+    function renderLoginHistory(logins) {
+      const container = document.getElementById('loginHistory');
+      container.replaceChildren();
+      if (!logins.length) { container.textContent = 'No previous sign-ins yet.'; container.className = 'login-empty'; return; }
+      container.className = '';
+      logins.forEach(login => {
+        const item = document.createElement('div'); item.className = 'login-item';
+        const place = document.createElement('span'); place.className = 'login-place'; place.textContent = cleanPlace(login.place);
+        const time = document.createElement('span'); time.className = 'login-time'; time.textContent = formatLoginTime(login.signedInAt);
+        item.append(place, time); container.append(item);
+      });
+    }
+    function subscribeToLoginHistory(user) {
+      const history = query(ref(database, `users/${user.uid}/loginHistory`), orderByKey(), limitToLast(5));
+      onValue(history, snapshot => {
+        const records = Object.values(snapshot.val() || {}).sort((a, b) => b.signedInAt - a.signedInAt);
+        renderLoginHistory(records);
+      }, () => {
+        const container = document.getElementById('loginHistory');
+        container.className = 'login-empty';
+        container.textContent = 'Unable to load sign-in history.';
+      });
+    }
+
+    // ── Onboarding / Profile Setup Controller ──────────────────────────────
+    const onboardingModal = document.getElementById('onboardingModal');
+    const onboardingForm = document.getElementById('onboardingForm');
+    const onboardingName = document.getElementById('onboardingName');
+    const onboardingPhone = document.getElementById('onboardingPhone');
+    const onboardingCity = document.getElementById('onboardingCity');
+    const onboardingError = document.getElementById('onboardingError');
+    const onboardingSubmitBtn = document.getElementById('onboardingSubmitBtn');
+    let currentUserForOnboarding = null;
+
+    function openOnboardingModal(user, profileData = {}, detectedCity = '') {
+      currentUserForOnboarding = user;
+      onboardingName.value = profileData.name || user.displayName || '';
+      onboardingPhone.value = profileData.phone || profileData.phoneNo || '';
+      onboardingCity.value = profileData.city || detectedCity || '';
+      onboardingError.hidden = true;
+      onboardingError.textContent = '';
+      onboardingSubmitBtn.disabled = false;
+      onboardingSubmitBtn.querySelector('span').textContent = 'Save & Continue';
+
+      onboardingModal.classList.add('open');
+      onboardingModal.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+
+      setTimeout(() => {
+        if (!onboardingName.value.trim()) onboardingName.focus();
+        else if (!onboardingPhone.value.trim()) onboardingPhone.focus();
+        else onboardingCity.focus();
+      }, 100);
+    }
+
+    function closeOnboardingModal() {
+      onboardingModal.classList.remove('open');
+      onboardingModal.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+    }
+
+    function showOnboardingError(msg) {
+      onboardingError.textContent = msg;
+      onboardingError.hidden = false;
+    }
+
+    onboardingForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!currentUserForOnboarding) return;
+
+      const nameVal = onboardingName.value.trim();
+      const phoneVal = onboardingPhone.value.trim();
+      const cityVal = onboardingCity.value.trim();
+
+      if (!nameVal) {
+        showOnboardingError('Please enter your full name.');
+        onboardingName.focus();
+        return;
+      }
+
+      const digits = phoneVal.replace(/\D/g, '');
+      if (digits.length < 10) {
+        showOnboardingError('Please enter a valid phone number (at least 10 digits).');
+        onboardingPhone.focus();
+        return;
+      }
+
+      if (!cityVal) {
+        showOnboardingError('Please enter your city.');
+        onboardingCity.focus();
+        return;
+      }
+
+      onboardingError.hidden = true;
+      onboardingSubmitBtn.disabled = true;
+      onboardingSubmitBtn.querySelector('span').textContent = 'Saving details…';
+
+      try {
+        const updateData = {
+          name: nameVal,
+          phone: phoneVal,
+          phoneNo: phoneVal,
+          city: cityVal,
+          profileCompleted: true,
+          updatedAt: Date.now()
+        };
+
+        await update(ref(database, `users/${currentUserForOnboarding.uid}`), updateData);
+
+        setProfile(currentUserForOnboarding, {
+          ...(currentProfileData || {}),
+          ...updateData
+        });
+
+        closeOnboardingModal();
+      } catch (err) {
+        console.error('Error saving profile:', err);
+        showOnboardingError('Failed to save profile. Please check your connection and try again.');
+        onboardingSubmitBtn.disabled = false;
+        onboardingSubmitBtn.querySelector('span').textContent = 'Save & Continue';
+      }
+    });
+
+    const editProfileBtn = document.getElementById('editProfileBtn');
+    if (editProfileBtn) {
+      editProfileBtn.addEventListener('click', () => {
+        profileMenu.classList.remove('open');
+        profileButton.setAttribute('aria-expanded', 'false');
+        if (auth.currentUser) {
+          openOnboardingModal(auth.currentUser, currentProfileData || {});
+        }
+      });
+    }
+
+    async function recordLogin(user) {
+      const signedInAt = Date.parse(user.metadata.lastSignInTime) || Date.now();
+      let place = 'Location unavailable';
+      let detectedCity = '';
+      try {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 5000);
+        const response = await fetch('https://ipapi.co/json/', { signal: controller.signal });
+        clearTimeout(timeout);
+        if (!response.ok) throw new Error('Location lookup failed');
+        const location = await response.json();
+        detectedCity = location.city || '';
+        place = [...new Map([location.city, location.region, location.country_name].filter(Boolean).map(value => [value.toLocaleLowerCase(), value])).values()].join(', ') || place;
+      } catch (_) { /* A sign-in is still recorded when the optional location lookup fails. */ }
+      const login = { place: cleanPlace(place), signedInAt, device: deviceSummary() };
+      
+      try {
+        const userSnap = await get(ref(database, `users/${user.uid}`));
+        const existingData = userSnap.exists() ? (userSnap.val() || {}) : {};
+        const userName = existingData.name || user.displayName || 'Student';
+
+        await update(ref(database, `users/${user.uid}`), {
+          uid: user.uid,
+          name: userName,
+          email: user.email || '',
+          photoURL: user.photoURL || '',
+          lastLoginAt: signedInAt,
+          lastLocation: login.place,
+          lastDevice: login.device
+        });
+        await set(ref(database, `users/${user.uid}/loginHistory/${signedInAt}`), login);
+
+        setProfile(user, existingData);
+
+        // First-time check: ask for name, phone, city if phone or city is not set
+        const hasPhone = Boolean(existingData.phone || existingData.phoneNo);
+        const hasCity = Boolean(existingData.city);
+        if (!hasPhone || !hasCity) {
+          openOnboardingModal(user, existingData, detectedCity);
+        }
+      } catch (err) {
+        console.error('Error in recordLogin:', err);
+        const container = document.getElementById('loginHistory');
+        if (container) {
+          container.className = 'login-empty';
+          container.textContent = 'Unable to save this sign-in.';
+        }
+      }
+    }
+    onAuthStateChanged(auth, user => {
+      if (!user) { window.location.replace('../index.html'); return; }
+      setProfile(user);
+      subscribeToLoginHistory(user);
+      recordLogin(user);
+      document.getElementById('loading').remove();
+    });
+    profileButton.addEventListener('click', () => { const open = profileMenu.classList.toggle('open'); profileButton.setAttribute('aria-expanded', String(open)); });
+    document.addEventListener('click', event => { if (!event.target.closest('.profile-wrap')) { profileMenu.classList.remove('open'); profileButton.setAttribute('aria-expanded', 'false'); } });
+    document.getElementById('signOutButton').addEventListener('click', async () => { await signOut(auth); window.location.replace('../index.html'); });
+
+    // ── Video Player Modal ──────────────────────────────────────────────────
+    const modal = document.getElementById('videoModal');
+    const modalIframe = document.getElementById('modalIframe');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalBadge = document.getElementById('modalBadge');
+    const modalFullPageBtn = document.getElementById('modalFullPageBtn');
+    const modalCloseBtn = document.getElementById('modalCloseBtn');
+    const modalBackdrop = document.getElementById('modalBackdrop');
+
+    function openPlayer(videoId, listId, title, type) {
+      modalIframe.src = `https://www.youtube-nocookie.com/embed/${videoId}?list=${listId}&autoplay=1&rel=0&modestbranding=1`;
+      modalTitle.textContent = title;
+      modalBadge.textContent = type;
+      modalFullPageBtn.href = `course-player.html?list=${listId}`;
+      modal.classList.add('open');
+      modal.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closePlayer() {
+      modal.classList.remove('open');
+      modal.setAttribute('aria-hidden', 'true');
+      modalIframe.src = '';
+      document.body.style.overflow = '';
+    }
+
+    modalCloseBtn.addEventListener('click', closePlayer);
+    modalBackdrop.addEventListener('click', closePlayer);
+
+    document.querySelectorAll('.playlist-card').forEach(card => {
+      card.addEventListener('click', e => {
+        e.preventDefault();
+        const vid = card.dataset.video;
+        const list = card.dataset.list;
+        const title = card.dataset.title;
+        const type = card.dataset.type;
+        openPlayer(vid, list, title, type);
+      });
+    });
+
+    // ── Study Materials Controller ──────────────────────────────────────────
+    let currentClass = 11;
+    let currentSubject = 'all';
+    let activeBook = null;
+    let activeChapterIndex = 0;
+
+    const booksGrid = document.getElementById('booksGrid');
+    const classTabs = document.getElementById('classTabs');
+    const subjectPills = document.getElementById('subjectPills');
+
+    const chapterModal = document.getElementById('chapterModal');
+    const chapterModalBackdrop = document.getElementById('chapterModalBackdrop');
+    const chapterModalCloseBtn = document.getElementById('chapterModalCloseBtn');
+    const chapterModalBookTitle = document.getElementById('chapterModalBookTitle');
+    const chapterModalBookSub = document.getElementById('chapterModalBookSub');
+    const chapterSearchInput = document.getElementById('chapterSearchInput');
+    const chapterListWrap = document.getElementById('chapterListWrap');
+
+    const pdfModal = document.getElementById('pdfModal');
+    const pdfBackBtn = document.getElementById('pdfBackBtn');
+    const pdfCloseBtn = document.getElementById('pdfCloseBtn');
+    const pdfDocTitle = document.getElementById('pdfDocTitle');
+    const pdfDocSub = document.getElementById('pdfDocSub');
+    const pdfChapterSelect = document.getElementById('pdfChapterSelect');
+    const pdfDownloadBtn = document.getElementById('pdfDownloadBtn');
+    const pdfExternalBtn = document.getElementById('pdfExternalBtn');
+    const pdfFrame = document.getElementById('pdfFrame');
+
+    function renderBooks() {
+      const filtered = STUDY_MATERIALS.filter(b => {
+        const classMatch = b.class === currentClass;
+        const subjMatch = currentSubject === 'all' || b.subject.toLowerCase() === currentSubject.toLowerCase();
+        return classMatch && subjMatch;
+      });
+
+      if (filtered.length === 0) {
+        booksGrid.innerHTML = `
+          <div style="grid-column: 1 / -1; text-align: center; padding: 48px 16px; color: var(--muted);">
+            <p style="font-size: 15px; margin-bottom: 12px;">No study materials found for this subject filter.</p>
+            <button class="subj-pill" id="resetSubjBtn" style="display:inline-block;">Show all subjects</button>
+          </div>
+        `;
+        const resetBtn = document.getElementById('resetSubjBtn');
+        if (resetBtn) {
+          resetBtn.addEventListener('click', () => {
+            const allPill = subjectPills.querySelector('[data-subject="all"]');
+            if (allPill) allPill.click();
+          });
+        }
+        return;
+      }
+
+      booksGrid.innerHTML = filtered.map(book => `
+        <button class="book-card" data-book-id="${book.id}" type="button" aria-label="${book.title}">
+          <div class="book-cover-wrap theme-${book.theme}">
+            <div class="book-badge-top">
+              <span>NCERT</span>
+              <span class="book-badge-tag">Class ${book.class === 11 ? 'XI' : 'XII'}</span>
+            </div>
+            <div class="book-main-title">
+              <div class="book-subject-heading">${book.subject.toUpperCase()}</div>
+              <div class="book-part-sub">${book.part} · Textbook</div>
+            </div>
+            <div class="book-footer-info">
+              <span>${book.chaptersCount} Chapters</span>
+              <span class="book-open-text">Read PDF ↗</span>
+            </div>
+          </div>
+          <div class="book-meta-title">${book.title}</div>
+          <div class="book-meta-sub">
+            <span>${book.chaptersCount} Chapters · NCERT</span>
+            <span class="book-open-text">View chapters →</span>
+          </div>
+        </button>
+      `).join('');
+
+      booksGrid.querySelectorAll('.book-card').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const bookId = btn.dataset.bookId;
+          const book = STUDY_MATERIALS.find(b => b.id === bookId);
+          if (book) openChapterModal(book);
+        });
+      });
+    }
+
+    classTabs.querySelectorAll('.class-tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        classTabs.querySelectorAll('.class-tab-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentClass = parseInt(btn.dataset.class, 10);
+        renderBooks();
+      });
+    });
+
+    subjectPills.querySelectorAll('.subj-pill').forEach(btn => {
+      btn.addEventListener('click', () => {
+        subjectPills.querySelectorAll('.subj-pill').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentSubject = btn.dataset.subject;
+        renderBooks();
+      });
+    });
+
+    function openChapterModal(book) {
+      activeBook = book;
+      chapterModalBookTitle.textContent = book.title;
+      chapterModalBookSub.textContent = `Class ${book.class}th · ${book.subject} · ${book.chaptersCount} Chapters`;
+      chapterSearchInput.value = '';
+      renderChapterList(book.chapters);
+      chapterModal.classList.add('open');
+      chapterModal.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+      setTimeout(() => chapterSearchInput.focus(), 100);
+    }
+
+    function closeChapterModal() {
+      chapterModal.classList.remove('open');
+      chapterModal.setAttribute('aria-hidden', 'true');
+      if (!pdfModal.classList.contains('open')) {
+        document.body.style.overflow = '';
+      }
+    }
+
+    function renderChapterList(chapters) {
+      if (chapters.length === 0) {
+        chapterListWrap.innerHTML = `<div style="text-align:center; padding: 32px; color: var(--muted); font-size:14px;">No matching chapters found.</div>`;
+        return;
+      }
+      chapterListWrap.innerHTML = chapters.map((ch, idx) => `
+        <div class="chapter-item" data-code="${ch.code}">
+          <div class="chapter-item-left">
+            <div class="chapter-num-badge">${idx + 1}</div>
+            <div class="chapter-titles">
+              <div class="chapter-name">${ch.title}</div>
+              <div class="chapter-file-label">${ch.label || 'Chapter ' + (idx + 1)} · ${ch.filename}</div>
+            </div>
+          </div>
+          <span class="chapter-read-btn">
+            <span>Read</span>
+            <span>↗</span>
+          </span>
+        </div>
+      `).join('');
+
+      chapterListWrap.querySelectorAll('.chapter-item').forEach(item => {
+        item.addEventListener('click', () => {
+          const code = item.dataset.code;
+          const chapterIdx = activeBook.chapters.findIndex(c => c.code === code);
+          if (chapterIdx !== -1) {
+            openPdfModal(activeBook, chapterIdx);
+          }
+        });
+      });
+    }
+
+    chapterSearchInput.addEventListener('input', (e) => {
+      if (!activeBook) return;
+      const q = e.target.value.toLowerCase().trim();
+      const filtered = activeBook.chapters.filter((ch, i) => 
+        ch.title.toLowerCase().includes(q) || 
+        (ch.label && ch.label.toLowerCase().includes(q)) ||
+        ch.filename.toLowerCase().includes(q) ||
+        String(i + 1).includes(q)
+      );
+      renderChapterList(filtered);
+    });
+
+    chapterModalCloseBtn.addEventListener('click', closeChapterModal);
+    chapterModalBackdrop.addEventListener('click', closeChapterModal);
+
+    function openPdfModal(book, chapterIndex) {
+      activeBook = book;
+      activeChapterIndex = chapterIndex;
+      const chapter = book.chapters[chapterIndex];
+      if (!chapter) return;
+
+      pdfDocTitle.textContent = `${chapter.label || 'Chapter ' + (chapterIndex + 1)}: ${chapter.title}`;
+      pdfDocSub.textContent = `${book.title} (Class ${book.class}th NCERT)`;
+
+      pdfChapterSelect.innerHTML = book.chapters.map((ch, i) => `
+        <option value="${i}" ${i === chapterIndex ? 'selected' : ''}>${ch.label || 'Ch ' + (i + 1)}: ${ch.title}</option>
+      `).join('');
+
+      const encodedPath = encodeURI(chapter.path);
+      pdfFrame.src = `${encodedPath}#toolbar=1&navpanes=0`;
+      pdfDownloadBtn.href = encodedPath;
+      pdfDownloadBtn.setAttribute('download', chapter.filename);
+      pdfExternalBtn.href = encodedPath;
+
+      chapterModal.classList.remove('open');
+      chapterModal.setAttribute('aria-hidden', 'true');
+
+      pdfModal.classList.add('open');
+      pdfModal.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closePdfModal() {
+      pdfModal.classList.remove('open');
+      pdfModal.setAttribute('aria-hidden', 'true');
+      pdfFrame.src = '';
+      document.body.style.overflow = '';
+    }
+
+    pdfBackBtn.addEventListener('click', () => {
+      closePdfModal();
+      if (activeBook) {
+        openChapterModal(activeBook);
+      }
+    });
+
+    pdfCloseBtn.addEventListener('click', closePdfModal);
+
+    pdfChapterSelect.addEventListener('change', (e) => {
+      const newIndex = parseInt(e.target.value, 10);
+      openPdfModal(activeBook, newIndex);
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        if (pdfModal.classList.contains('open')) {
+          closePdfModal();
+        } else if (chapterModal.classList.contains('open')) {
+          closeChapterModal();
+        } else if (modal.classList.contains('open')) {
+          closePlayer();
+        }
+      }
+    });
+
+    // Initialize study materials view
+    renderBooks();
+
+    // ── Blog Management & Viewing ──
+    let allPortalBlogs = [];
+
+    async function loadPortalBlogs() {
+      const grid = document.getElementById('blogsGrid');
+      if (!grid) return;
+
+      try {
+        const res = await fetch('/api/blogs');
+        const data = await res.json();
+        if (data.success && Array.isArray(data.blogs) && data.blogs.length > 0) {
+          allPortalBlogs = data.blogs;
+        }
+      } catch (err) {
+        console.warn('Could not fetch blogs from API:', err);
+      }
+
+      // Default fallback blogs if offline or not loaded
+      if (allPortalBlogs.length === 0) {
+        allPortalBlogs = [
+          {
+            id: 'blog_neet_bio_680',
+            title: 'Complete Strategy to Score 350+ in NEET Biology: Chapter-Wise Priority List',
+            category: 'NEET Strategy',
+            author: 'Nilanshu Sir',
+            readTime: '5 min read',
+            coverImage: 'https://images.unsplash.com/photo-1532094349884-543bc11b234d?auto=format&fit=crop&w=800&q=80',
+            excerpt: 'Master the high-yield chapters in Genetics, Biotechnology, and Human Physiology with targeted NCERT line-by-line reading.',
+            content: 'Scoring 350+ out of 360 in NEET Biology is not just achievable—it is the single most important score multiplier for securing a Government Medical College seat.\n\n### 1. The 100% NCERT Mandate\nOver 95% of questions in the NEET Biology paper are framed directly from NCERT lines, tables, summary boxes, and diagram labels.\n\n### 2. High-Yield Unit Prioritization\n- **Genetics & Evolution:** 12 to 15 questions every year.\n- **Biotechnology:** 8 to 10 questions. Memorize cleavage sites and PCR steps.\n- **Human Physiology:** 10 to 12 questions. Focus on endocrine regulation.',
+            publishedAtFormatted: 'Sep 04, 2026'
+          },
+          {
+            id: 'blog_genetics_shortcuts',
+            title: 'How to Solve Complex Genetics Pedigree Charts in Under 60 Seconds',
+            category: 'Biology Notes',
+            author: 'Nilanshu Sir',
+            readTime: '4 min read',
+            coverImage: 'https://images.unsplash.com/photo-1507668077129-56e32842fceb?auto=format&fit=crop&w=800&q=80',
+            excerpt: 'Simple elimination rules to determine autosomal dominant, recessive, and sex-linked inheritance patterns without confusion.',
+            content: 'Pedigree analysis questions often intimidate NEET aspirants, but following three systematic elimination rules allows you to identify the inheritance mode within 60 seconds.\n\n### Rule 1: Look for Generation Skipping\nIf unaffected parents have an affected child, the condition must be recessive.\n\n### Rule 2: Check Sex-Specific Transmission\n- X-Linked Recessive: Affected mothers ALWAYS pass the trait to all of their sons.\n- X-Linked Dominant: Affected fathers pass to 100% of daughters.',
+            publishedAtFormatted: 'Sep 05, 2026'
+          }
+        ];
+      }
+
+      renderPortalBlogs(allPortalBlogs);
+      setupBlogFilters();
+    }
+
+    function renderPortalBlogs(blogs) {
+      const grid = document.getElementById('blogsGrid');
+      if (!grid) return;
+      grid.innerHTML = '';
+
+      if (!blogs || blogs.length === 0) {
+        grid.innerHTML = '<div style="grid-column:1/-1; padding:40px; text-align:center; color:var(--muted);">No articles found in this category.</div>';
+        return;
+      }
+
+      blogs.forEach(b => {
+        const card = document.createElement('div');
+        card.className = 'blog-card';
+        card.setAttribute('data-id', b.id);
+
+        const imgHtml = b.coverImage 
+          ? `<div class="blog-thumb-wrap">
+               <img src="${b.coverImage}" alt="${b.title}" loading="lazy">
+               <span class="blog-category-badge">${b.category || 'Article'}</span>
+             </div>`
+          : `<div class="blog-thumb-wrap" style="background:linear-gradient(135deg,#181818,#282828); display:flex; align-items:center; justify-content:center;">
+               <span class="blog-category-badge">${b.category || 'Article'}</span>
+             </div>`;
+
+        card.innerHTML = `
+          ${imgHtml}
+          <div class="blog-card-body">
+            <div class="blog-meta-row">
+              <span>${b.publishedAtFormatted || 'Recent'}</span>
+              <span>•</span>
+              <span>${b.readTime || '4 min read'}</span>
+            </div>
+            <h3 class="blog-card-title">${b.title}</h3>
+            <p class="blog-card-excerpt">${b.excerpt || ''}</p>
+            <div class="blog-card-footer">
+              <span class="blog-author-tag">${b.author || 'Nilanshu Sir'}</span>
+              <span class="blog-read-link">Read article →</span>
+            </div>
+          </div>
+        `;
+
+        card.addEventListener('click', () => openBlogModal(b));
+        grid.appendChild(card);
+      });
+    }
+
+    function setupBlogFilters() {
+      const buttons = document.querySelectorAll('.blog-pill-btn');
+      buttons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          buttons.forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          const cat = btn.getAttribute('data-category');
+          if (cat === 'all') {
+            renderPortalBlogs(allPortalBlogs);
+          } else {
+            const filtered = allPortalBlogs.filter(b => (b.category || '').toLowerCase() === cat.toLowerCase());
+            renderPortalBlogs(filtered);
+          }
+        });
+      });
+    }
+
+    function openBlogModal(b) {
+      const modal = document.getElementById('blogModal');
+      const banner = document.getElementById('modalBlogBanner');
+      const cat = document.getElementById('modalBlogCategory');
+      const title = document.getElementById('modalBlogTitle');
+      const author = document.getElementById('modalBlogAuthor');
+      const date = document.getElementById('modalBlogDate');
+      const readTime = document.getElementById('modalBlogReadTime');
+      const content = document.getElementById('modalBlogContent');
+
+      cat.textContent = b.category || 'Article';
+      title.textContent = b.title;
+      author.textContent = b.author || 'Nilanshu Sir';
+      date.textContent = b.publishedAtFormatted || 'Recent';
+      readTime.textContent = b.readTime || '4 min read';
+
+      if (b.coverImage) {
+        banner.src = b.coverImage;
+        banner.style.display = 'block';
+      } else {
+        banner.style.display = 'none';
+      }
+
+      let raw = b.content || '';
+      let formatted = raw
+        .replace(/^### (.*$)/gim, '<h3>$1</h3>')
+        .replace(/^## (.*$)/gim, '<h2>$1</h2>')
+        .replace(/\*\*(.*?)\*\*/gim, '<strong>$1</strong>')
+        .replace(/^\- (.*$)/gim, '<li>$1</li>')
+        .replace(/\n\n/g, '</p><p>')
+        .replace(/\n/g, '<br>');
+
+      content.innerHTML = `<p>${formatted}</p>`;
+
+      modal.classList.add('open');
+      modal.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeBlogModal() {
+      const modal = document.getElementById('blogModal');
+      if (!modal) return;
+      modal.classList.remove('open');
+      modal.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+    }
+
+    const blogCloseBtn = document.getElementById('blogModalCloseBtn');
+    const blogBackdrop = document.getElementById('blogModalBackdrop');
+    if (blogCloseBtn) blogCloseBtn.addEventListener('click', closeBlogModal);
+    if (blogBackdrop) blogBackdrop.addEventListener('click', closeBlogModal);
+
+    // ESC key closes blog modal
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        const modal = document.getElementById('blogModal');
+        if (modal && modal.classList.contains('open')) closeBlogModal();
+      }
+    });
+
+    // Initialize blogs
+    loadPortalBlogs();
+
+  </script>
+
+  <!-- Blog Reader Modal -->
+  <div class="blog-modal" id="blogModal" aria-hidden="true">
+    <div class="blog-modal-backdrop" id="blogModalBackdrop"></div>
+    <div class="blog-modal-dialog">
+      <div class="blog-modal-top">
+        <span class="city-pill" id="modalBlogCategory" style="font-size:12px; padding:3px 10px; border-radius:999px; background:#f1f3f5; border:1px solid #e5e7eb;">Article</span>
+        <button type="button" class="blog-modal-close" id="blogModalCloseBtn" aria-label="Close article">✕</button>
+      </div>
+      <div class="blog-modal-body">
+        <img src="" alt="" class="blog-modal-banner" id="modalBlogBanner" style="display: none;">
+        <h1 class="blog-modal-title" id="modalBlogTitle"></h1>
+        <div class="blog-modal-meta">
+          <span id="modalBlogAuthor" style="font-weight: 500; color: var(--ink);"></span>
+          <span>&bull;</span>
+          <span id="modalBlogDate"></span>
+          <span>&bull;</span>
+          <span id="modalBlogReadTime"></span>
+        </div>
+        <div class="blog-modal-content" id="modalBlogContent"></div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

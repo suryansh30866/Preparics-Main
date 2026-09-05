@@ -1,0 +1,496 @@
+/* ============================================================
+   RESPONSIVE MEDIA QUERIES — EduTest
+   Mobile First Approach
+============================================================ */
+
+/* ============================================================
+   MOBILE — Small Phones (320px - 480px)
+============================================================ */
+@media (max-width: 480px) {
+  html { font-size: 14px; }
+  
+  :root {
+    --nav-h: 56px;
+  }
+  
+  /* Navbar */
+  .nav-sub {
+    height: 56px;
+    padding: 0 16px;
+    gap: 12px;
+  }
+  
+  .nav-brand {
+    font-size: 15px;
+    gap: 6px;
+  }
+  
+  .nav-logo-fallback {
+    width: 28px;
+    height: 28px;
+    font-size: 13px;
+  }
+  
+  .nav-tabs {
+    display: none;
+  }
+  
+  .sub-tab {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+  
+  .btn-ghost, .btn-fill {
+    font-size: 12px;
+    padding: 6px 14px;
+  }
+  
+  /* Page offset */
+  .page-offset { padding-top: 56px; }
+  section { scroll-margin-top: 70px; }
+  
+  /* Hero */
+  .hero {
+    padding: 60px 16px 60px;
+  }
+  
+  .hero h1 {
+    font-size: clamp(32px, 8vw, 48px);
+    line-height: 1.1;
+  }
+  
+  .hero-body {
+    font-size: 14px;
+    line-height: 1.5;
+    margin-bottom: 24px;
+  }
+  
+  .hero-btns {
+    gap: 8px;
+    margin-bottom: 40px;
+  }
+  
+  .btn-primary-lg, .btn-outline-lg {
+    font-size: 13px;
+    padding: 10px 18px;
+    width: 100%;
+  }
+  
+  /* Hero Image */
+  .hero-img-placeholder {
+    height: 300px;
+  }
+  
+  /* Hero Stats */
+  .hero-stats {
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  .hero-stat {
+    flex: none;
+    padding: 20px 0;
+    border-right: none;
+    border-bottom: 1px solid var(--line);
+  }
+  
+  .hero-stat:last-child {
+    border-bottom: none;
+  }
+  
+  /* Sections */
+  #programmes, #about, #results, #portal {
+    padding: 60px 16px !important;
+  }
+  
+  .card {
+    padding: 20px 16px;
+  }
+  
+  .grid-cols {
+    grid-template-columns: 1fr !important;
+  }
+  
+  h2 {
+    font-size: 28px;
+  }
+  
+  h3, h4 {
+    font-size: 18px;
+  }
+  
+  /* Featured Programs */
+  .featured-programs {
+    grid-template-columns: 1fr !important;
+    gap: 20px;
+  }
+  
+  .prog-card {
+    padding: 20px;
+  }
+  
+  /* Results Table */
+  .results-grid {
+    grid-template-columns: 1fr !important;
+  }
+  
+  .result-item {
+    padding: 16px;
+  }
+  
+  /* Portal Section */
+  .portal-features {
+    grid-template-columns: 1fr !important;
+    gap: 20px;
+  }
+  
+  /* Map */
+  .map-container {
+    height: 350px;
+  }
+  
+  .map-header {
+    padding: 40px 16px 30px;
+  }
+  
+  .map-info-card {
+    top: 16px !important;
+    left: 16px !important;
+    max-width: 200px;
+    padding: 14px 14px;
+    font-size: 12px;
+  }
+  
+  /* Footer */
+  footer {
+    padding: 40px 16px;
+  }
+  
+  .footer-grid {
+    grid-template-columns: 1fr !important;
+    gap: 30px;
+  }
+  
+  .footer-col h4 {
+    font-size: 14px;
+  }
+  
+  .footer-col a, .footer-col p {
+    font-size: 12px;
+  }
+}
+
+/* ============================================================
+   MOBILE LANDSCAPE — Small to Medium Phones (481px - 768px)
+============================================================ */
+@media (min-width: 481px) and (max-width: 768px) {
+  html { font-size: 15px; }
+  
+  :root {
+    --nav-h: 60px;
+  }
+  
+  /* Navbar */
+  .nav-sub {
+    height: 60px;
+    padding: 0 24px;
+    gap: 16px;
+  }
+  
+  .nav-brand {
+    font-size: 16px;
+  }
+  
+  .nav-logo-fallback {
+    width: 30px;
+    height: 30px;
+    font-size: 14px;
+  }
+  
+  .nav-tabs {
+    display: none;
+  }
+  
+  .sub-tab {
+    font-size: 13px;
+    padding: 7px 14px;
+  }
+  
+  .nav-actions {
+    gap: 8px;
+  }
+  
+  .btn-ghost, .btn-fill {
+    font-size: 13px;
+    padding: 7px 16px;
+  }
+  
+  /* Page */
+  .page-offset { padding-top: 60px; }
+  section { scroll-margin-top: 75px; }
+  
+  /* Hero */
+  .hero {
+    padding: 70px 24px 70px;
+  }
+  
+  .hero h1 {
+    font-size: clamp(36px, 6vw, 56px);
+  }
+  
+  .hero-body {
+    font-size: 15px;
+    max-width: 480px;
+  }
+  
+  .hero-btns {
+    gap: 10px;
+    margin-bottom: 50px;
+  }
+  
+  .btn-primary-lg, .btn-outline-lg {
+    font-size: 14px;
+    padding: 11px 24px;
+    flex: 1;
+  }
+  
+  .hero-img-placeholder {
+    height: 350px;
+  }
+  
+  .hero-stats {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+  
+  /* Sections */
+  #programmes, #about, #results, #portal {
+    padding: 70px 24px !important;
+  }
+  
+  h2 {
+    font-size: 32px;
+  }
+  
+  h3 {
+    font-size: 20px;
+  }
+  
+  /* Featured Programs */
+  .featured-programs {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 24px;
+  }
+  
+  /* Results Table */
+  .results-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+  
+  /* Portal Features */
+  .portal-features {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 24px;
+  }
+  
+  /* Map */
+  .map-container {
+    height: 400px;
+  }
+  
+  .map-header {
+    padding: 60px 24px 40px;
+  }
+  
+  /* Footer */
+  footer {
+    padding: 50px 24px;
+  }
+  
+  .footer-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 40px;
+  }
+}
+
+/* ============================================================
+   TABLET — Medium Devices (769px - 1024px)
+============================================================ */
+@media (min-width: 769px) and (max-width: 1024px) {
+  :root {
+    --nav-h: 64px;
+    --max: 960px;
+  }
+  
+  /* Navbar */
+  .nav-sub {
+    padding: 0 32px;
+    gap: 32px;
+  }
+  
+  .nav-brand {
+    font-size: 16px;
+  }
+  
+  .nav-tabs {
+    gap: 8px;
+  }
+  
+  .sub-tab {
+    padding: 8px 16px;
+    font-size: 13px;
+  }
+  
+  /* Hero */
+  .hero {
+    padding: 90px 32px 70px;
+  }
+  
+  .hero h1 {
+    font-size: clamp(40px, 5vw, 64px);
+  }
+  
+  .hero-body {
+    font-size: 16px;
+    max-width: 600px;
+  }
+  
+  .hero-img-placeholder {
+    height: 400px;
+  }
+  
+  .hero-stats {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
+  /* Sections */
+  #programmes, #about, #results, #portal {
+    padding: 90px 32px !important;
+  }
+  
+  /* Featured Programs */
+  .featured-programs {
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 28px;
+  }
+  
+  /* Portal Features */
+  .portal-features {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 28px;
+  }
+  
+  /* Map */
+  .map-container {
+    height: 450px;
+  }
+  
+  /* Footer */
+  .footer-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 48px;
+  }
+}
+
+/* ============================================================
+   DESKTOP — Large Tablets & Small Desktops (1025px - 1440px)
+============================================================ */
+@media (min-width: 1025px) and (max-width: 1440px) {
+  :root {
+    --max: 1020px;
+  }
+  
+  .hero-img-placeholder {
+    height: 460px;
+  }
+  
+  .featured-programs {
+    grid-template-columns: repeat(3, 1fr) !important;
+  }
+  
+  .portal-features {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+/* ============================================================
+   LARGE DESKTOP (1441px+)
+============================================================ */
+@media (min-width: 1441px) {
+  :root {
+    --max: 1200px;
+  }
+  
+  .hero-img-placeholder {
+    height: 520px;
+  }
+}
+
+/* ============================================================
+   HIGH RESOLUTION DISPLAYS (Retina, 4K)
+============================================================ */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .nav-logo-fallback,
+  button,
+  a {
+    -webkit-font-smoothing: antialiased;
+  }
+}
+
+/* ============================================================
+   TOUCH DEVICES (Mobile & Tablet)
+============================================================ */
+@media (hover: none) and (pointer: coarse) {
+  .btn-ghost:not(.nav-actions *),
+  .btn-fill:not(.nav-actions *),
+  .btn-primary-lg,
+  .btn-outline-lg,
+  .sub-tab {
+    padding: 12px 20px; /* Larger touch targets */
+    min-height: 44px; /* Apple's recommended minimum */
+  }
+  
+  .nav-menu-toggle {
+    width: 40px !important;
+    height: 40px !important;
+    min-width: 40px !important;
+    min-height: 40px !important;
+    padding: 0 !important;
+  }
+  
+  .hero-btns button,
+  .hero-btns a {
+    padding: 14px 24px;
+  }
+}
+
+/* ============================================================
+   REDUCED MOTION (Accessibility)
+============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ============================================================
+   PRINT STYLES (When printing)
+============================================================ */
+@media print {
+  .nav-sub,
+  .nav-actions,
+  .hero-btns {
+    display: none;
+  }
+  
+  body {
+    background: white;
+    color: black;
+  }
+  
+  section {
+    page-break-inside: avoid;
+  }
+}
