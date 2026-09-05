@@ -376,6 +376,17 @@ def serve_static(filename):
         abort(403)
     if os.path.isfile(safe_path):
         return send_from_directory(BASE_DIR, filename)
+
+    # Case-insensitive fallback for Linux environments (e.g. Render)
+    dirname, basename = os.path.split(safe_path)
+    if os.path.isdir(dirname):
+        lower_basename = basename.lower()
+        for entry in os.listdir(dirname):
+            if entry.lower() == lower_basename:
+                rel_dir = os.path.relpath(dirname, BASE_DIR)
+                target_dir = BASE_DIR if rel_dir == '.' else dirname
+                return send_from_directory(target_dir, entry)
+
     abort(404)
 
 if __name__ == '__main__':
