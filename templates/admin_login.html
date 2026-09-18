@@ -10,6 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=Google+Sans:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
   <style>
     *, *::before, *::after {
       box-sizing: border-box;
@@ -377,6 +378,10 @@
         </div>
       </div>
 
+      <div class="form-group" style="margin-bottom: 20px;">
+        <div class="cf-turnstile" data-sitekey="{{ turnstile_site_key|default('0x4AAAAAAE7ba1nzBVSNJs1W') }}" data-theme="light" style="display: flex; justify-content: center;"></div>
+      </div>
+
       <button type="submit" id="submitBtn" class="btn-submit">
         <span class="spinner" id="btnSpinner"></span>
         <span id="btnLabel">Sign In</span>
@@ -406,6 +411,22 @@
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       alertBox.style.display = 'none';
+
+      let turnstileToken = '';
+      if (window.turnstile && typeof window.turnstile.getResponse === 'function') {
+        turnstileToken = window.turnstile.getResponse();
+      }
+      if (!turnstileToken) {
+        const turnstileInput = form.querySelector('[name="cf-turnstile-response"]');
+        if (turnstileInput) turnstileToken = turnstileInput.value;
+      }
+
+      if (!turnstileToken) {
+        alertMsg.textContent = 'Please complete the Cloudflare security verification.';
+        alertBox.style.display = 'flex';
+        return;
+      }
+
       submitBtn.disabled = true;
       btnSpinner.style.display = 'inline-block';
       btnLabel.textContent = 'Verifying...';
@@ -420,7 +441,11 @@
             'Content-Type': 'application/json',
             'Accept': 'application/json'
           },
-          body: JSON.stringify({ username, password })
+          body: JSON.stringify({
+            username,
+            password,
+            turnstile_token: turnstileToken
+          })
         });
 
         const data = await response.json().catch(() => ({}));
@@ -429,6 +454,9 @@
           btnLabel.textContent = 'Authenticated';
           window.location.href = data.redirect || '/admin91939/dashboard';
         } else {
+          if (window.turnstile && typeof window.turnstile.reset === 'function') {
+            window.turnstile.reset();
+          }
           alertMsg.textContent = data.message || 'Invalid credentials.';
           alertBox.style.display = 'flex';
           submitBtn.disabled = false;
@@ -436,6 +464,9 @@
           btnLabel.textContent = 'Sign In';
         }
       } catch (err) {
+        if (window.turnstile && typeof window.turnstile.reset === 'function') {
+          window.turnstile.reset();
+        }
         alertMsg.textContent = 'Network connection error. Please try again.';
         alertBox.style.display = 'flex';
         submitBtn.disabled = false;

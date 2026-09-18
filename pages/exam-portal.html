@@ -9,6 +9,7 @@
   <link rel="apple-touch-icon" href="../logo.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
   <style>
     :root { --ink:#101010; --muted:#6c6c6c; --line:#e6e6e6; --soft:#f7f7f7; --max:1160px; }
     * { box-sizing:border-box; }
@@ -1432,6 +1433,10 @@
           <input type="text" id="onboardingCity" class="form-input" placeholder="e.g. Varanasi, Lucknow" required autocomplete="address-level2">
         </div>
 
+        <div class="form-group" style="margin-top: 6px; margin-bottom: 8px; display: flex; justify-content: center;">
+          <div class="cf-turnstile" id="onboardingTurnstile" data-sitekey="0x4AAAAAAE7ba1nzBVSNJs1W" data-theme="light"></div>
+        </div>
+
         <div id="onboardingError" class="onboarding-error" hidden></div>
 
         <button type="submit" id="onboardingSubmitBtn" class="onboarding-submit-btn">
@@ -1578,6 +1583,10 @@
       onboardingModal.setAttribute('aria-hidden', 'false');
       document.body.style.overflow = 'hidden';
 
+      if (window.turnstile && typeof window.turnstile.reset === 'function') {
+        try { window.turnstile.reset(); } catch(e) {}
+      }
+
       setTimeout(() => {
         if (!onboardingName.value.trim()) onboardingName.focus();
         else if (!onboardingPhone.value.trim()) onboardingPhone.focus();
@@ -1623,8 +1632,58 @@
         return;
       }
 
+      // Check Cloudflare Turnstile token
+      let turnstileToken = '';
+      if (window.turnstile && typeof window.turnstile.getResponse === 'function') {
+        turnstileToken = window.turnstile.getResponse();
+      }
+      if (!turnstileToken) {
+        const tInput = onboardingForm.querySelector('[name="cf-turnstile-response"]');
+        if (tInput) turnstileToken = tInput.value;
+      }
+
+      if (!turnstileToken) {
+        showOnboardingError('Please complete the Cloudflare security verification.');
+        return;
+      }
+
       onboardingError.hidden = true;
       onboardingSubmitBtn.disabled = true;
+      onboardingSubmitBtn.querySelector('span').textContent = 'Verifying security…';
+
+      // 1. Verify Turnstile token with backend server BEFORE writing to Firebase
+      try {
+        const verifyRes = await fetch('/api/verify-turnstile', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify({ token: turnstileToken })
+        });
+
+        const verifyData = await verifyRes.json().catch(() => ({}));
+
+        if (!verifyRes.ok || !verifyData.success) {
+          if (window.turnstile && typeof window.turnstile.reset === 'function') {
+            window.turnstile.reset();
+          }
+          showOnboardingError(verifyData.message || 'CAPTCHA verification failed. Please try again.');
+          onboardingSubmitBtn.disabled = false;
+          onboardingSubmitBtn.querySelector('span').textContent = 'Save & Continue';
+          return;
+        }
+      } catch (err) {
+        console.error('Turnstile verification error:', err);
+        if (window.turnstile && typeof window.turnstile.reset === 'function') {
+          window.turnstile.reset();
+        }
+        showOnboardingError('Security verification connection error. Please try again.');
+        onboardingSubmitBtn.disabled = false;
+        onboardingSubmitBtn.querySelector('span').textContent = 'Save & Continue';
+        return;
+      }
+
       onboardingSubmitBtn.querySelector('span').textContent = 'Saving details…';
 
       try {
@@ -1647,6 +1706,9 @@
         closeOnboardingModal();
       } catch (err) {
         console.error('Error saving profile:', err);
+        if (window.turnstile && typeof window.turnstile.reset === 'function') {
+          window.turnstile.reset();
+        }
         showOnboardingError('Failed to save profile. Please check your connection and try again.');
         onboardingSubmitBtn.disabled = false;
         onboardingSubmitBtn.querySelector('span').textContent = 'Save & Continue';

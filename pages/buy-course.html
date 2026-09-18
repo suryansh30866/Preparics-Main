@@ -10,6 +10,7 @@
   <link rel="apple-touch-icon" href="../logo.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
   <style>
     :root {
       --ink: #101010;
@@ -319,15 +320,21 @@
     </p>
 
     <!-- Waitlist subscription -->
-    <form class="waitlist-card" id="waitlistForm">
-      <input
-        type="email"
-        class="waitlist-input"
-        id="emailInput"
-        placeholder="Enter your email address"
-        required
-      >
-      <button type="submit" class="waitlist-btn" id="submitBtn">Get notified</button>
+    <form id="waitlistForm" style="width: 100%; max-width: 460px; margin: 0 auto 16px;">
+      <div class="waitlist-card">
+        <input
+          type="email"
+          class="waitlist-input"
+          id="emailInput"
+          placeholder="Enter your email address"
+          required
+        >
+        <button type="submit" class="waitlist-btn" id="submitBtn">Get notified</button>
+      </div>
+      <div id="waitlistTurnstileWrap" style="margin-top: 14px; display: flex; justify-content: center;">
+        <div class="cf-turnstile" id="turnstileWidget" data-sitekey="0x4AAAAAAE7ba1nzBVSNJs1W" data-theme="light"></div>
+      </div>
+      <div id="waitlistError" style="display: none; color: #dc2626; font-size: 13px; text-align: center; margin-top: 8px; font-weight: 500;"></div>
     </form>
 
     <div class="success-msg" id="successMsg">
@@ -388,6 +395,7 @@
     const submitBtn = document.getElementById('submitBtn');
     const successMsg = document.getElementById('successMsg');
     const note = document.getElementById('waitlistNote');
+    const waitlistError = document.getElementById('waitlistError');
 
     onAuthStateChanged(auth, user => {
       if (!user) {
@@ -404,10 +412,74 @@
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
+      if (waitlistError) {
+        waitlistError.style.display = 'none';
+        waitlistError.textContent = '';
+      }
+
       const email = emailInput.value.trim();
       if (!email) return;
 
+      // Check Turnstile verification response
+      let turnstileToken = '';
+      if (window.turnstile && typeof window.turnstile.getResponse === 'function') {
+        turnstileToken = window.turnstile.getResponse();
+      }
+      if (!turnstileToken) {
+        const tInput = form.querySelector('[name="cf-turnstile-response"]');
+        if (tInput) turnstileToken = tInput.value;
+      }
+
+      if (!turnstileToken) {
+        if (waitlistError) {
+          waitlistError.textContent = 'Please complete the Cloudflare security verification.';
+          waitlistError.style.display = 'block';
+        }
+        return;
+      }
+
       submitBtn.disabled = true;
+      submitBtn.textContent = 'Verifying…';
+
+      // 1. Verify Turnstile token with server BEFORE writing to Firebase
+      try {
+        const verifyRes = await fetch('/api/verify-turnstile', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify({ token: turnstileToken })
+        });
+
+        const verifyData = await verifyRes.json().catch(() => ({}));
+
+        if (!verifyRes.ok || !verifyData.success) {
+          if (window.turnstile && typeof window.turnstile.reset === 'function') {
+            window.turnstile.reset();
+          }
+          if (waitlistError) {
+            waitlistError.textContent = verifyData.message || 'CAPTCHA verification failed. Please try again.';
+            waitlistError.style.display = 'block';
+          }
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Get notified';
+          return;
+        }
+      } catch (err) {
+        console.error('Turnstile verification error:', err);
+        if (window.turnstile && typeof window.turnstile.reset === 'function') {
+          window.turnstile.reset();
+        }
+        if (waitlistError) {
+          waitlistError.textContent = 'Verification service error. Please try again.';
+          waitlistError.style.display = 'block';
+        }
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Get notified';
+        return;
+      }
+
       submitBtn.textContent = 'Saving…';
 
       const payload = {

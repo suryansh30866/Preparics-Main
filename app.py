@@ -1,6 +1,9 @@
 import os
 import hmac
 import time
+import json
+import urllib.request
+import urllib.parse
 from datetime import timedelta
 from functools import wraps
 from flask import (
@@ -81,6 +84,57 @@ def reset_failed_attempts(ip: str):
         del failed_logins[ip]
 
 # ---------------------------------------------------------------------------
+# Cloudflare Turnstile CAPTCHA Integration (Server-Side)
+# ---------------------------------------------------------------------------
+TURNSTILE_SITE_KEY = os.environ.get('TURNSTILE_SITE_KEY', '0x4AAAAAAE7ba1nzBVSNJs1W')
+TURNSTILE_SECRET_KEY = os.environ.get('TURNSTILE_SECRET_KEY', '')
+
+def verify_turnstile(token: str, ip: str = None) -> tuple:
+    """
+    Validates a Cloudflare Turnstile token via the Cloudflare Siteverify API.
+    Returns (is_valid: bool, message: str).
+    """
+    if not token or not str(token).strip():
+        return False, "CAPTCHA challenge verification required. Please complete the CAPTCHA."
+
+    if app.config.get('TESTING') and token == 'test-token':
+        return True, "Testing bypass"
+
+    if not TURNSTILE_SECRET_KEY:
+        # If running in local dev and secret key is not provided, log and allow for testing
+        if os.environ.get('FLASK_ENV') == 'development':
+            print("Warning: TURNSTILE_SECRET_KEY is empty in development mode. Allowing bypass for testing.")
+            return True, "Development bypass"
+        return False, "Turnstile secret key is not configured on the server."
+
+    verify_url = "https://challenges.cloudflare.com/turnstile/v0/siteverify"
+    payload = {
+        "secret": TURNSTILE_SECRET_KEY,
+        "response": str(token).strip()
+    }
+    if ip:
+        payload["remoteip"] = ip
+
+    try:
+        data = urllib.parse.urlencode(payload).encode("utf-8")
+        req = urllib.request.Request(
+            verify_url,
+            data=data,
+            headers={
+                "Content-Type": "application/x-www-form-urlencoded",
+                "User-Agent": "Preparics-Turnstile/1.0"
+            }
+        )
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            result = json.loads(resp.read().decode("utf-8"))
+            if result.get("success"):
+                return True, "CAPTCHA verified successfully."
+            error_codes = result.get("error-codes", [])
+            error_details = ", ".join(error_codes) if error_codes else "Verification rejected"
+            return False, f"CAPTCHA verification failed ({error_details}). Please try again."
+    except Exception as e:
+        print(f"Error validating Turnstile token: {e}")
+        return False, "Unable to reach CAPTCHA verification service. Please try again."
 
 # ---------------------------------------------------------------------------
 # Firebase Realtime Database Integration (Server-Side)
@@ -185,13 +239,49 @@ def admin_required(f):
     return decorated_function
 
 # ---------------------------------------------------------------------------
+# Cloudflare Turnstile Public API Endpoints
+# ---------------------------------------------------------------------------
+@app.route('/api/turnstile-config', methods=['GET'])
+def get_turnstile_config():
+    """Returns the public Turnstile site key for client widget initialization."""
+    return jsonify({
+        'success': True,
+        'siteKey': TURNSTILE_SITE_KEY
+    }), 200
+
+@app.route('/api/verify-turnstile', methods=['POST'])
+def api_verify_turnstile():
+    """
+    Public API endpoint to verify Turnstile token before client-side operations
+    such as Firebase Realtime Database writes.
+    """
+    client_ip = get_client_ip()
+    if request.is_json:
+        data = request.get_json(silent=True) or {}
+        token = data.get('token') or data.get('turnstile_token') or data.get('cf-turnstile-response')
+    else:
+        token = request.form.get('token') or request.form.get('cf-turnstile-response')
+
+    is_valid, message = verify_turnstile(token, client_ip)
+    if not is_valid:
+        return jsonify({
+            'success': False,
+            'message': message
+        }), 400
+
+    return jsonify({
+        'success': True,
+        'message': message
+    }), 200
+
+# ---------------------------------------------------------------------------
 # Admin Routes (Private Obscure URL: /admin91939)
 # ---------------------------------------------------------------------------
 @app.route('/admin91939', methods=['GET'])
 def admin_login_page():
     if session.get('admin_authenticated'):
         return redirect('/admin91939/dashboard')
-    return render_template('admin_login.html')
+    return render_template('admin_login.html', turnstile_site_key=TURNSTILE_SITE_KEY)
 
 @app.route('/admin91939/login', methods=['POST'])
 def admin_login():
@@ -207,9 +297,18 @@ def admin_login():
         data = request.get_json() or {}
         username = data.get('username', '').strip()
         password = data.get('password', '')
+        turnstile_token = data.get('turnstile_token') or data.get('cf-turnstile-response', '')
     else:
         username = request.form.get('username', '').strip()
         password = request.form.get('password', '')
+        turnstile_token = request.form.get('cf-turnstile-response', '')
+
+    # Enforce Turnstile validation BEFORE password checks
+    is_valid_turnstile, turnstile_msg = verify_turnstile(turnstile_token, client_ip)
+    if not is_valid_turnstile:
+        if request.is_json:
+            return jsonify({'success': False, 'message': turnstile_msg}), 400
+        return render_template('admin_login.html', error=turnstile_msg, turnstile_site_key=TURNSTILE_SITE_KEY), 400
 
     user_match = hmac.compare_digest(username, ADMIN_USERNAME)
     password_match = check_password_hash(ADMIN_PASSWORD_HASH, password) if ADMIN_PASSWORD_HASH else False
@@ -231,7 +330,7 @@ def admin_login():
 
         if request.is_json:
             return jsonify({'success': False, 'message': 'Invalid credentials.'}), 401
-        return render_template('admin_login.html', error='Invalid credentials.'), 401
+        return render_template('admin_login.html', error='Invalid credentials.', turnstile_site_key=TURNSTILE_SITE_KEY), 401
 
 @app.route('/admin91939/logout', methods=['POST', 'GET'])
 def admin_logout():
